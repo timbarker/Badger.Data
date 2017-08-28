@@ -1,0 +1,13 @@
+using System;
+
+namespace Badger.Data
+{
+    public interface IDbQueryBuilder
+    {
+        IDbQueryBuilder WithSql(string sql);
+        IDbQueryBuilder WithParameter<T>(string name, T value);
+        T ExecuteScalar<T>();
+        T ExecuteSingle<T>(Func<IDbRow, T> mapper);
+        T[] Execute<T>(Func<IDbRow, T> mapper);
+    }
+}
