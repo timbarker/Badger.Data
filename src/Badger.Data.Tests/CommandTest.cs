@@ -7,24 +7,24 @@ using Xunit.Abstractions;
 
 namespace Badger.Data.Tests
 {
-    public class InsertCommandTest : IClassFixture<SqlLiteTestFixture>
+    public class CommandTest : IClassFixture<SqlLiteTestFixture>
     {
         private readonly SqlLiteTestFixture fixture;
         private readonly IDbSessionFactory sessionFactory;
 
-        public InsertCommandTest(SqlLiteTestFixture fixture)
+        public CommandTest(SqlLiteTestFixture fixture)
         {
             this.fixture = fixture;
 
             this.sessionFactory = new DbSessionFactory(SqliteFactory.Instance, this.fixture.ConnectionString);
         }
 
-        class TestInsertCommand : ICommand
+        class InsertPersonCommand : ICommand
         {
             private readonly string name;
             private readonly DateTime dob;
 
-            public TestInsertCommand(string name, DateTime dob)
+            public InsertPersonCommand(string name, DateTime dob)
             {
                 this.name = name;
                 this.dob = dob;
@@ -39,12 +39,6 @@ namespace Badger.Data.Tests
             }
         }
 
-        class Person 
-        {
-            public string Name { get; set; }
-            public DateTime Dob { get; set; }
-        }
-
         [Fact]
         public void SessionInsertShouldAlterOneRow()
         {
@@ -53,7 +47,7 @@ namespace Badger.Data.Tests
 
             using (var session = this.sessionFactory.CreateSession())
             {
-                session.ExecuteCommand(new TestInsertCommand(name, dob)).ShouldBe(1);
+                session.ExecuteCommand(new InsertPersonCommand(name, dob)).ShouldBe(1);
             }
         
             var result = this.fixture.Connection.QuerySingle<Person>(
@@ -70,7 +64,7 @@ namespace Badger.Data.Tests
 
             using (var session = this.sessionFactory.CreateTransactionSession())
             {
-                session.ExecuteCommand(new TestInsertCommand(name, dob)).ShouldBe(1);
+                session.ExecuteCommand(new InsertPersonCommand(name, dob)).ShouldBe(1);
                 session.Commit();
             }
         
@@ -88,7 +82,7 @@ namespace Badger.Data.Tests
 
             using (var session = this.sessionFactory.CreateTransactionSession())
             {
-                session.ExecuteCommand(new TestInsertCommand(name, dob)).ShouldBe(1);
+                session.ExecuteCommand(new InsertPersonCommand(name, dob)).ShouldBe(1);
             }
         
             var result = this.fixture.Connection.QuerySingleOrDefault<Person>(

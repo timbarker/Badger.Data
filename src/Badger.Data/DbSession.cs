@@ -29,7 +29,11 @@ namespace Badger.Data
 
         public TResult ExecuteQuery<TResult>(IQuery<TResult> query)
         {
-            throw new NotImplementedException();
+            if (this.conn.State == ConnectionState.Closed)
+                this.conn.Open(); 
+
+            var builder = new DbQueryBuilder(this.conn.CreateCommand());
+            return query.Execute(builder);
         }
     }
 }
