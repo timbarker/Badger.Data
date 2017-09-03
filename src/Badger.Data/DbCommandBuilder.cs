@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 
 namespace Badger.Data
 {
@@ -56,14 +57,16 @@ namespace Badger.Data
             return this;
         }
 
-        public T ExecuteScalar<T>()
+        public T ExecuteScalar<T>(T @default = default(T))
         {
-            throw new NotImplementedException();
+            var result = this.command.ExecuteScalar();
+            if (result == DBNull.Value) return @default;
+            return (T)result;
         }
 
         public T ExecuteSingle<T>(Func<IDbRow, T> mapper)
         {
-            throw new NotImplementedException();
+            return this.Execute(mapper).FirstOrDefault();
         }
 
         public IEnumerable<T> Execute<T>(Func<IDbRow, T> mapper)
