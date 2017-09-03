@@ -4,6 +4,7 @@ namespace Badger.Data
     {
         IDbCommandBuilder WithSql(string sql);
         IDbCommandBuilder WithParameter<T>(string name, T value);
+        IDbCommandBuilder WithParameter(string name, string value, int length);
         int Execute();
     }
 }

@@ -33,7 +33,7 @@ namespace Badger.Data.Tests
             {
                 return builder
                     .WithSql("insert into people(name, dob) values (@name, @dob)")
-                    .WithParameter("name", this.name)
+                    .WithParameter("name", this.name, 4)
                     .WithParameter("dob", this.dob)
                     .Execute();
             }

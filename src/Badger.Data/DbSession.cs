@@ -32,7 +32,7 @@ namespace Badger.Data
             if (this.conn.State == ConnectionState.Closed)
                 this.conn.Open(); 
 
-            var builder = new DbQueryBuilder(this.conn.CreateCommand());
+            var builder = new DbCommandBuilder(this.conn.CreateCommand());
             return query.Execute(builder);
         }
     }
