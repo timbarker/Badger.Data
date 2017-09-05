@@ -7,16 +7,16 @@ using System.Linq;
 
 namespace Badger.Data.Tests
 {
-    public class QueryTest : IClassFixture<SqlLiteTestFixture>
+    public abstract class QueryTest<T> : IClassFixture<T> where T : DbTestFixture
     {
-        private readonly SqlLiteTestFixture fixture;
+        private readonly T fixture;
         private readonly DbSessionFactory sessionFactory;
 
-        public QueryTest(SqlLiteTestFixture fixture)
+        protected QueryTest(T fixture)
         {
             this.fixture = fixture;
 
-            this.sessionFactory = new DbSessionFactory(SqliteFactory.Instance, this.fixture.ConnectionString);
+            this.sessionFactory = new DbSessionFactory(fixture.ProviderFactory, this.fixture.ConnectionString);
         }
 
         [Fact]

@@ -7,16 +7,16 @@ using Xunit.Abstractions;
 
 namespace Badger.Data.Tests
 {
-    public class CommandTest : IClassFixture<SqlLiteTestFixture>
+    public abstract class CommandTest<T> : IClassFixture<T> where T : DbTestFixture
     {
-        private readonly SqlLiteTestFixture fixture;
+        private readonly T fixture;
         private readonly IDbSessionFactory sessionFactory;
 
-        public CommandTest(SqlLiteTestFixture fixture)
+        protected CommandTest(T fixture)
         {
             this.fixture = fixture;
 
-            this.sessionFactory = new DbSessionFactory(SqliteFactory.Instance, this.fixture.ConnectionString);
+            this.sessionFactory = new DbSessionFactory(fixture.ProviderFactory, this.fixture.ConnectionString);
         }
 
         class InsertPersonCommand : ICommand
@@ -33,7 +33,7 @@ namespace Badger.Data.Tests
             {
                 return builder
                     .WithSql("insert into people(name, dob) values (@name, @dob)")
-                    .WithParameter("name", this.name, 4)
+                    .WithParameter("name", this.name)
                     .WithParameter("dob", this.dob)
                     .Execute();
             }
