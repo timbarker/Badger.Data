@@ -1,3 +1,4 @@
+using Dapper;
 using System;
 using System.Data.Common;
 
@@ -19,16 +20,40 @@ namespace Badger.Data.Tests
             this.ProviderFactory = providerFactory;
         }
 
-        protected void OpenTestConnection()
+        protected void InitTestDatabase()
+        {
+            CreateTestDatabase();
+            OpenTestConnection();
+            CreateTestTables();
+            InsertTestData();
+        }
+
+        protected virtual void CreateTestDatabase() {}
+
+        private void OpenTestConnection()
         {
             this.Connection = this.ProviderFactory.CreateConnection();
             this.Connection.ConnectionString = this.ConnectionString;
             this.Connection.Open();
         }
+        protected abstract void CreateTestTables();
 
+        protected void InsertTestData()
+        {
+            this.Connection.Execute(
+                "insert into people (name, dob) values (@Name, @Dob)",
+                TestPerson1);
+
+            this.Connection.Execute(
+                "insert into people (name, dob) values (@Name, @Dob)",
+                TestPerson2);
+        }
         public virtual void Dispose()
         {
             this.Connection.Dispose();
+            DestroyTestDatabase();
         }
+
+        protected abstract void DestroyTestDatabase();
     }
 }

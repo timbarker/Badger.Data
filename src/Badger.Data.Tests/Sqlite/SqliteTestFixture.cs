@@ -11,26 +11,20 @@ namespace Badger.Data.Tests.Sqlite
         public SqliteTestFixture()
             : base (SqliteFactory.Instance)
         {
-            OpenTestConnection();
+            InitTestDatabase();
+        }
 
+        protected override void CreateTestTables()
+        {
             this.Connection.Execute(
                 @"create table people(
                     id integer primary key autoincrement, 
                     name text not null, 
                     dob text not null)");
-
-            this.Connection.Execute(
-                "insert into people (name, dob) values (@Name, @Dob)",
-                TestPerson1);
-
-            this.Connection.Execute(
-                "insert into people (name, dob) values (@Name, @Dob)",
-                TestPerson2);
         }
 
-        public override void Dispose()
+        protected override void DestroyTestDatabase()
         {
-            base.Dispose();
             File.Delete(this.TestDatabase);
         }
     }
