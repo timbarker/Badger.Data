@@ -5,7 +5,6 @@ namespace Badger.Data.Tests.Sqlite
         public SqliteCommandTest(SqliteTestFixture fixture)
             : base (fixture)
         {
-            
         }
     }
 }

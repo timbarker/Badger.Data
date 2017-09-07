@@ -4,6 +4,7 @@ using System;
 using Microsoft.Data.Sqlite;
 using Xunit;
 using Xunit.Abstractions;
+using System.Threading.Tasks;
 
 namespace Badger.Data.Tests
 {
@@ -29,13 +30,14 @@ namespace Badger.Data.Tests
                 this.name = name;
                 this.dob = dob;
             }
-            public int Execute(IDbCommandBuilder builder)
+            
+            public IDbCommand Build(IDbCommandBuilder builder)
             {
                 return builder
                     .WithSql("insert into people(name, dob) values (@name, @dob)")
                     .WithParameter("name", this.name)
                     .WithParameter("dob", this.dob)
-                    .Execute();
+                    .Build();
             }
         }
 
@@ -57,6 +59,24 @@ namespace Badger.Data.Tests
         }
 
         [Fact]
+        public async Task SessionInsertShouldAlterOneRowAsync()
+        {
+            var name = Guid.NewGuid().ToString();
+            var dob = new DateTime(1990, 5, 20);
+
+            using (var session = this.sessionFactory.CreateAsyncSession())
+            {
+                (await session.ExecuteCommandAsync(new InsertPersonCommand(name, dob))).ShouldBe(1);
+            }
+        
+            var result = this.fixture.Connection.QuerySingle<Person>(
+                "select name, dob from people where name = @name", new { name });
+
+            result.Dob.ShouldBe(dob);
+        }
+
+
+        [Fact]
         public void TransactionSessionInsertShouldAlterOneRow()
         {
             var name = Guid.NewGuid().ToString();
@@ -75,6 +95,24 @@ namespace Badger.Data.Tests
         }
 
         [Fact]
+        public async Task TransactionSessionInsertShouldAlterOneRowAsync()
+        {
+            var name = Guid.NewGuid().ToString();
+            var dob = new DateTime(1990, 5, 20);
+
+            using (var session = this.sessionFactory.CreateAsyncTransactionSession())
+            {
+                (await session.ExecuteCommandAsync(new InsertPersonCommand(name, dob))).ShouldBe(1);
+                session.Commit();
+            }
+        
+            var result = this.fixture.Connection.QuerySingle<Person>(
+                "select name, dob from people where name = @name", new { name });
+
+            result.Dob.ShouldBe(dob);
+        }
+
+        [Fact]
         public void UncommitedTransactionSessionInsertShouldNotAlterAnyRows()
         {
             var name = Guid.NewGuid().ToString();
@@ -83,6 +121,23 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateTransactionSession())
             {
                 session.ExecuteCommand(new InsertPersonCommand(name, dob)).ShouldBe(1);
+            }
+        
+            var result = this.fixture.Connection.QuerySingleOrDefault<Person>(
+                "select name, dob from people where name = @name", new { name });
+
+            result.ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task UncommitedTransactionSessionInsertShouldNotAlterAnyRowsAsync()
+        {
+            var name = Guid.NewGuid().ToString();
+            var dob = new DateTime(1990, 5, 20);
+
+            using (var session = this.sessionFactory.CreateAsyncTransactionSession())
+            {
+                (await session.ExecuteCommandAsync(new InsertPersonCommand(name, dob))).ShouldBe(1);
             }
         
             var result = this.fixture.Connection.QuerySingleOrDefault<Person>(

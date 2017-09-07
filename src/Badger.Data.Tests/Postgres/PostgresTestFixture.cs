@@ -31,6 +31,7 @@ namespace Badger.Data.Tests.Postgres
                 conn.Execute($"create database {this.TestDatabase}");
             }
         }
+        
         protected override void DestroyTestDatabase()
         {
             using (var conn = new NpgsqlConnection(this.baseConnectionString))

@@ -1,17 +1,17 @@
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
 namespace Badger.Data
 {
-    class DbTransactionSession : IDbTransactionSession
+    class DbTransactionSession : DbSession, IDbTransactionSession
     {
-        private readonly DbConnection conn;
         private readonly IsolationLevel isolationLevel;
         private DbTransaction transaction;
 
         public DbTransactionSession(DbConnection conn, IsolationLevel isolationLevel)
+            : base(conn)
         {
-            this.conn = conn;
             this.isolationLevel = isolationLevel;
         }
 
@@ -20,29 +20,17 @@ namespace Badger.Data
             this.transaction.Commit();
         }
 
-        public void Dispose()
+        protected override DbCommand CreateCommand()
         {
-            this.conn.Close();
+            var command = base.CreateCommand();
+            command.Transaction = this.transaction;
+            return command;
         }
 
-        public int ExecuteCommand(ICommand command)
+        protected override void OpenConnection()
         {
-             if (this.conn.State == ConnectionState.Closed)
-            {
-                this.conn.Open();
-                this.transaction = this.conn.BeginTransaction(this.isolationLevel);
-            }
-
-            var dbCommand = this.conn.CreateCommand();
-            dbCommand.Transaction = this.transaction;
-
-            var builder = new DbCommandBuilder(dbCommand);
-            return command.Execute(builder);
-        }
-
-        public TResult ExecuteQuery<TResult>(IQuery<TResult> query)
-        {
-            throw new System.NotImplementedException();
+            base.OpenConnection();
+            this.transaction = this.conn.BeginTransaction(this.isolationLevel);
         }
     }
 }

@@ -14,6 +14,16 @@ namespace Badger.Data
             this.connectionString = connectionString;
         }
 
+        public IAsyncDbSession CreateAsyncSession()
+        {
+            return new AsyncDbSession(CreateConnection());
+        }
+
+        public IAsyncDbTransactionSession CreateAsyncTransactionSession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        {
+            return new AsyncDbTransactionSession(CreateConnection(), isolationLevel);
+        }
+
         public IDbSession CreateSession()
         {
             return new DbSession(CreateConnection());

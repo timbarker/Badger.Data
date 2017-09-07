@@ -2,6 +2,6 @@ namespace Badger.Data
 {
     public interface IQuery<TResult>
     {
-        TResult Execute(IDbQueryBuilder builder);
+        IDbQuery<TResult> Build(IDbQueryBuilder<TResult> builder);
     }
 }
