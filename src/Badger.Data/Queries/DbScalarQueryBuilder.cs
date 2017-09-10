@@ -2,7 +2,9 @@ using System.Data.Common;
 
 namespace Badger.Data.Queries
 {
-    sealed class DbScalarQueryBuilder<T> : DbBaseBuilder<IDbScalarQueryBuilder<T>>, IDbScalarQueryBuilder<T>
+    sealed class DbScalarQueryBuilder<T> 
+        : DbBaseBuilder<IDbScalarQueryBuilder<T>>
+        , IDbScalarQueryBuilder<T>
     {
         private T @default;
 
@@ -11,7 +13,7 @@ namespace Badger.Data.Queries
         {
         }
 
-        public IDbExecutor Build()
+        public override IDbExecutor Build()
         {
             return new DbQueryScalarExecuter<T>(command, @default);
         }

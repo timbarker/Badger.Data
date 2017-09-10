@@ -1,7 +1,7 @@
 namespace Badger.Data
 {
-    public interface IScalarQuery<TResult>
+
+    public interface IScalarQuery<TResult> : IDbOperation<IDbScalarQueryBuilder<TResult>>
     {
-        IDbExecutor Build(IDbScalarQueryBuilder<TResult> builder);
     }
 }

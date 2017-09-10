@@ -46,7 +46,7 @@ namespace Badger.Data.Tests
 
         class GetAllPeopleQuery : IQuery<Person>
         {
-            public IDbExecutor Build(IDbQueryBuilder<Person> builder)
+            public IDbExecutor Prepare(IDbQueryBuilder<Person> builder)
             {
                 return builder
                     .WithSql("select id, name, dob from people")
@@ -84,7 +84,7 @@ namespace Badger.Data.Tests
 
         class CountPeopleQuery : IScalarQuery<long>
         {
-            public IDbExecutor Build(IDbScalarQueryBuilder<long> builder)
+            public IDbExecutor Prepare(IDbScalarQueryBuilder<long> builder)
             {
                 return builder
                     .WithSql("select count(*) from people")
@@ -116,7 +116,7 @@ namespace Badger.Data.Tests
 
         class NullScalarQueryWithDefault : IScalarQuery<long>
         {
-            public IDbExecutor Build(IDbScalarQueryBuilder<long> builder)
+            public IDbExecutor Prepare(IDbScalarQueryBuilder<long> builder)
             {
                 return builder
                     .WithSql("select null")
@@ -149,7 +149,7 @@ namespace Badger.Data.Tests
 
         class NullScalarQuery : IScalarQuery<string>
         {
-            public IDbExecutor Build(IDbScalarQueryBuilder<string> builder)
+            public IDbExecutor Prepare(IDbScalarQueryBuilder<string> builder)
             {
                 return builder
                     .WithSql("select null")

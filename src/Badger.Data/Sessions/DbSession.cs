@@ -24,19 +24,19 @@ namespace Badger.Data.Sessions
         public int ExecuteCommand(ICommand command)
         {
             var builder = new Commands.DbCommandBuilder(CreateCommand());
-            return ((IDbExecutor<int>)command.Build(builder)).Execute();
+            return ((IDbExecutor<int>)command.Prepare(builder)).Execute();
         }
 
         public IEnumerable<TResult> ExecuteQuery<TResult>(IQuery<TResult> query)
         {
             var builder = new DbQueryBuilder<TResult>(CreateCommand());
-            return ((IDbExecutor<IEnumerable<TResult>>)query.Build(builder)).Execute();
+            return ((IDbExecutor<IEnumerable<TResult>>)query.Prepare(builder)).Execute();
         }
 
         public TResult ExecuteQuery<TResult>(IScalarQuery<TResult> query)
         {
             var builder = new DbScalarQueryBuilder<TResult>(CreateCommand());
-            return ((IDbExecutor<TResult>)query.Build(builder)).Execute();
+            return ((IDbExecutor<TResult>)query.Prepare(builder)).Execute();
         }
 
         protected virtual DbCommand CreateCommand()

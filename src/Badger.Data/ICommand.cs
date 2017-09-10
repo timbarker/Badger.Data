@@ -1,8 +1,6 @@
 namespace Badger.Data
 {
-
-    public interface ICommand
+    public interface ICommand : IDbOperation<IDbCommandBuilder>
     {
-        IDbExecutor Build(IDbCommandBuilder builder);
     }
 }
