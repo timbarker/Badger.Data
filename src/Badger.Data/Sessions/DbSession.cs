@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using Badger.Data.Queries;
+using Badger.Data.Commands;
 
-namespace Badger.Data
+namespace Badger.Data.Sessions
 {
     class DbSession : IDbSession
     {
@@ -21,7 +23,7 @@ namespace Badger.Data
 
         public int ExecuteCommand(ICommand command)
         {
-            var builder = new DbCommandBuilder(CreateCommand());
+            var builder = new Commands.DbCommandBuilder(CreateCommand());
             return command.Build(builder).Execute();
         }
 

@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using Badger.Data.Sessions;
 
 namespace Badger.Data
 {

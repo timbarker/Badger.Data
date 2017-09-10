@@ -2,7 +2,7 @@ using System.Collections;
 using System.Data.Common;
 using System.Linq;
 
-namespace Badger.Data
+namespace Badger.Data.Commands
 {
     sealed class DbCommandBuilder : DbBaseBuilder<IDbCommandBuilder>, IDbCommandBuilder
     {

@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
-namespace Badger.Data
+namespace Badger.Data.Sessions
 {
-    class DbTransactionSession : DbSession, IDbTransactionSession
+    sealed class DbTransactionSession : DbSession, IDbTransactionSession
     {
         private readonly IsolationLevel isolationLevel;
         private DbTransaction transaction;
