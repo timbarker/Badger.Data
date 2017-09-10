@@ -44,13 +44,13 @@ namespace Badger.Data.Sessions
             return ExecuteQueryAsync(query, CancellationToken.None);
         }
 
-        public async Task<TResult> ExecuteQueryAsync<TResult>(IScalarQuery<TResult> query, CancellationToken cancellationToken)
+        public async Task<TResult> ExecuteQueryAsync<TResult>(IQueryScalar<TResult> query, CancellationToken cancellationToken)
         {
-            var builder = new DbScalarQueryBuilder<TResult>(await CreateCommandAsync(cancellationToken));
+            var builder = new DbQueryScalarBuilder<TResult>(await CreateCommandAsync(cancellationToken));
             return await ((IDbExecutor<TResult>)query.Prepare(builder)).ExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<TResult> ExecuteQueryAsync<TResult>(IScalarQuery<TResult> query)
+        public Task<TResult> ExecuteQueryAsync<TResult>(IQueryScalar<TResult> query)
         {
             return ExecuteQueryAsync(query, CancellationToken.None);
         }

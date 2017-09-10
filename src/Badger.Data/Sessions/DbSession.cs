@@ -33,9 +33,9 @@ namespace Badger.Data.Sessions
             return ((IDbExecutor<IEnumerable<TResult>>)query.Prepare(builder)).Execute();
         }
 
-        public TResult ExecuteQuery<TResult>(IScalarQuery<TResult> query)
+        public TResult ExecuteQuery<TResult>(IQueryScalar<TResult> query)
         {
-            var builder = new DbScalarQueryBuilder<TResult>(CreateCommand());
+            var builder = new DbQueryScalarBuilder<TResult>(CreateCommand());
             return ((IDbExecutor<TResult>)query.Prepare(builder)).Execute();
         }
 
