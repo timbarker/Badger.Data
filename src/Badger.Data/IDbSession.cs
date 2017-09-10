@@ -9,6 +9,7 @@ namespace Badger.Data
     {
         int ExecuteCommand(ICommand command);
         IEnumerable<TResult> ExecuteQuery<TResult>(IQuery<TResult> query);
+        TResult ExecuteQuery<TResult>(IQuerySingle<TResult> query); 
         TResult ExecuteQuery<TResult>(IQueryScalar<TResult> query);
     }
 }

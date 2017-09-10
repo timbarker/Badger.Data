@@ -157,50 +157,75 @@ namespace Badger.Data.Tests
             }
         }
 
-        // [Fact]
-        // public void ExecuteSingleTest()
-        // {
-        //     using (var session = this.sessionFactory.CreateSession())
-        //     {
-        //         var person = session.ExecuteQuery(
-        //             new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
+        [Fact]
+        public void ExecuteSingleTest()
+        {
+            using (var session = this.sessionFactory.CreateSession())
+            {
+                var person = session.ExecuteQuery(
+                    new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
-        //         person.Dob.ShouldBe(this.fixture.TestPerson1.Dob);
-        //     }
-        // }
+                person.Dob.ShouldBe(this.fixture.TestPerson1.Dob);
+            }
+        }
 
-        // [Fact]
-        // public void ExecuteSingleWhenNoRowsTest()
-        // {
-        //     using (var session = this.sessionFactory.CreateSession())
-        //     {
-        //         var person = session.ExecuteQuery(
-        //             new FindPersonByNameQuery("invalid name"));
+        [Fact]
+        public async Task ExecuteSingleAsyncTest()
+        {
+            using (var session = this.sessionFactory.CreateAsyncSession())
+            {
+                var person = await session.ExecuteQueryAsync(
+                    new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
-        //         person.ShouldBeNull();
-        //     }
-        // }
+                person.Dob.ShouldBe(this.fixture.TestPerson1.Dob);
+            }
+        }
 
-        // class FindPersonByNameQuery : IQuery<Person>
-        // {
-        //     private readonly string name;
+        [Fact]
+        public void ExecuteSingleWhenNoRowsTest()
+        {
+            using (var session = this.sessionFactory.CreateSession())
+            {
+                var person = session.ExecuteQuery(
+                    new FindPersonByNameQuery("invalid name"));
 
-        //     public FindPersonByNameQuery(string name)
-        //     {
-        //         this.name = name;
-        //     }
+                person.ShouldBeNull();
+            }
+        }
 
-        //     public Person Execute(IDbQueryBuilder builder)
-        //     {
-        //         return builder
-        //             .WithSql("select name, dob from people where name = @name")
-        //             .WithParameter("name", this.name)
-        //             .ExecuteSingle(row => new Person 
-        //             {
-        //                 Name = row.Get<string>("name"),
-        //                 Dob = row.Get<DateTime>("dob")
-        //             });
-        //     }
-        // }
+        [Fact]
+        public async Task ExecuteSingleWhenNoRowsAsyncTest()
+        {
+            using (var session = this.sessionFactory.CreateAsyncSession())
+            {
+                var person = await session.ExecuteQueryAsync(
+                    new FindPersonByNameQuery("invalid name"));
+
+                person.ShouldBeNull();
+            }
+        }
+
+        class FindPersonByNameQuery : IQuerySingle<Person>
+        {
+            private readonly string name;
+
+            public FindPersonByNameQuery(string name)
+            {
+                this.name = name;
+            }
+
+            public IDbExecutor Prepare(IDbQuerySingleBuilder<Person> builder)
+            {
+                return builder
+                    .WithSql("select name, dob from people where name = @name")
+                    .WithParameter("name", this.name)
+                    .WithMapper(row => new Person 
+                    {
+                        Name = row.Get<string>("name"),
+                        Dob = row.Get<DateTime>("dob")
+                    })
+                    .Build();
+            }
+        }
     }
 }

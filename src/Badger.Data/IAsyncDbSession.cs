@@ -13,6 +13,9 @@ namespace Badger.Data
         Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken);
         Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(IQuery<TResult> query);
 
+        Task<TResult> ExecuteQueryAsync<TResult>(IQuerySingle<TResult> query, CancellationToken cancellationToken);
+        Task<TResult> ExecuteQueryAsync<TResult>(IQuerySingle<TResult> query);
+
         Task<TResult> ExecuteQueryAsync<TResult>(IQueryScalar<TResult> query, CancellationToken cancellationToken);
         Task<TResult> ExecuteQueryAsync<TResult>(IQueryScalar<TResult> query);
     }
