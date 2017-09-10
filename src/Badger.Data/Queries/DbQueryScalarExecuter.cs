@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Badger.Data.Queries
 {
-    sealed class DbQueryScalarExecuter<T> : IDbScalarQuery<T>
+    sealed class DbQueryScalarExecuter<T> : IDbExecutor<T>
     {
         private readonly DbCommand command;
         private readonly T @default;

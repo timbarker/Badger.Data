@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Badger.Data.Commands
 {
-    sealed class DbCommandExecuter : IDbCommand
+    sealed class DbCommandExecuter : IDbExecutor<int>
     {
         private readonly DbCommand command;
 

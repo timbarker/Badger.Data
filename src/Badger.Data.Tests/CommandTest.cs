@@ -31,7 +31,7 @@ namespace Badger.Data.Tests
                 this.dob = dob;
             }
             
-            public IDbCommand Build(IDbCommandBuilder builder)
+            public IDbExecutor Build(IDbCommandBuilder builder)
             {
                 return builder
                     .WithSql("insert into people(name, dob) values (@name, @dob)")

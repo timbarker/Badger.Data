@@ -25,7 +25,7 @@ namespace Badger.Data.Sessions
         public async Task<int> ExecuteCommandAsync(ICommand command, CancellationToken cancellationToken)
         {
             var builder = new Commands.DbCommandBuilder(await CreateCommandAsync(cancellationToken));
-            return await command.Build(builder).ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            return await ((IDbExecutor<int>)command.Build(builder)).ExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public Task<int> ExecuteCommandAsync(ICommand command)
@@ -36,7 +36,7 @@ namespace Badger.Data.Sessions
         public async Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
         {
             var builder = new DbQueryBuilder<TResult>(await CreateCommandAsync(cancellationToken));
-            return await query.Build(builder).ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            return await ((IDbExecutor<IEnumerable<TResult>>)query.Build(builder)).ExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(IQuery<TResult> query)
@@ -47,7 +47,7 @@ namespace Badger.Data.Sessions
         public async Task<TResult> ExecuteQueryAsync<TResult>(IScalarQuery<TResult> query, CancellationToken cancellationToken)
         {
             var builder = new DbScalarQueryBuilder<TResult>(await CreateCommandAsync(cancellationToken));
-            return await query.Build(builder).ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            return await ((IDbExecutor<TResult>)query.Build(builder)).ExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public Task<TResult> ExecuteQueryAsync<TResult>(IScalarQuery<TResult> query)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Badger.Data.Queries
 {
-    sealed class DbQueryExecuter<TResult> : IDbQuery<TResult>
+    sealed class DbQueryExecuter<TResult> : IDbExecutor<IEnumerable<TResult>>
     {
         private readonly DbCommand command;
         private readonly Func<IDbRow, TResult> mapper;

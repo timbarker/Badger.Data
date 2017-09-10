@@ -4,7 +4,7 @@ using System.Data.Common;
 
 namespace Badger.Data
 {
-    class DbRow : IDbRow
+    sealed class DbRow : IDbRow
     {
         private readonly DbDataReader reader;
 

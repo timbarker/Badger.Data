@@ -11,7 +11,7 @@ namespace Badger.Data.Queries
         {
         }
 
-        public IDbScalarQuery<T> Build()
+        public IDbExecutor Build()
         {
             return new DbQueryScalarExecuter<T>(command, @default);
         }

@@ -18,7 +18,7 @@ namespace Badger.Data.Queries
             return this;
         }
 
-        public IDbQuery<T> Build()
+        public IDbExecutor Build()
         {
             return new DbQueryExecuter<T>(command, mapper);
         }

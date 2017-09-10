@@ -11,7 +11,7 @@ namespace Badger.Data.Commands
         {
         }
   
-        public IDbCommand Build()
+        public IDbExecutor Build()
         {
             return new DbCommandExecuter(this.command);
         }

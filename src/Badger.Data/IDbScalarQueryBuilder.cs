@@ -5,6 +5,6 @@ namespace Badger.Data
         IDbScalarQueryBuilder<T> WithSql(string sql);
         IDbScalarQueryBuilder<T> WithParameter<TParam>(string name, TParam value);
         IDbScalarQueryBuilder<T> WithDefault(T @default);
-        IDbScalarQuery<T> Build();
+        IDbExecutor Build();
     }
 }

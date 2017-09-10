@@ -8,7 +8,7 @@ namespace Badger.Data
         IDbQueryBuilder<T> WithSql(string sql);
         IDbQueryBuilder<T> WithParameter<TParam>(string name, TParam value);
         IDbQueryBuilder<T> WithMapper(Func<IDbRow, T> mapper);
-        IDbQuery<T> Build();
+        IDbExecutor Build();
     }
 
 }
