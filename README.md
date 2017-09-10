@@ -16,26 +16,26 @@ class InsertPersonCommand : ICommand
         this.name = name;
         this.dob = dob;
     }
-
-    public int Execute(IDbCommandBuilder builder)
+    
+    public IDbExecutor Prepare(IDbCommandBuilder builder)
     {
         return builder
             .WithSql("insert into people(name, dob) values (@name, @dob)")
             .WithParameter("name", this.name)
             .WithParameter("dob", this.dob)
-            .Execute();
+            .Build();
     }
 }
 
 class Program 
 {
-    static void Main() 
+    static async Task Main() 
     {
         var sessionFactory = new DbSessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
 
-        using (var session = sessionFactory.CreateSession())
+        using (var session = sessionFactory.CreateAsyncSession())
         {
-            session.ExecuteCommand(new InsertPersonCommand("Bob", new DateTime(2000, 1, 1)));
+            await session.ExecuteCommandAsync(new InsertPersonCommand("Bob", new DateTime(2000, 1, 1)));
         }
     }
 }
@@ -51,30 +51,31 @@ public class Person
     public DateTime Dob { get; set; }
 }
 
-class GetAllPeopleQuery : IQuery<IEnumerable<Person>>
+class GetAllPeopleQuery : IQuery<Person>
 {
-    public IEnumerable<Person> Execute(IDbQueryBuilder builder)
+    public IDbExecutor Prepare(IDbQueryBuilder<Person> builder)
     {
         return builder
             .WithSql("select id, name, dob from people")
-            .Execute(r => new Person 
+            .WithMapper(r => new Person 
                 { 
                     Id = r.Get<long>("id"), 
                     Name = r.Get<string>("name"), 
                     Dob = r.Get<DateTime>("dob")
-                });
+                })
+            .Build();
     }
 }
 
 class Program 
 {
-    static void Main() 
+    static async Task Main() 
     {
         var sessionFactory = new DbSessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
 
-        using (var session = sessionFactory.CreateSession())
+        using (var session = sessionFactory.CreateAsyncSession())
         {
-            var people = session.ExecuteQuery(new GetAllPeopleQuery());
+            var people = await session.ExecuteQueryAsync(new GetAllPeopleQuery());
 
             foreach (var person in people)
             {
