@@ -1,6 +1,8 @@
 # Badger.Data
 Simple data access for .net
 
+[![Build Status](https://travis-ci.org/timbarker/Badger.Data.svg?branch=master)](https://travis-ci.org/timbarker/Badger.Data)
+
 ## Examples
 
 ### Inserting a row into a table
