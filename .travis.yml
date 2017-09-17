@@ -2,6 +2,10 @@ language: csharp
 mono: none
 dotnet: 2.0.0
 dist: trusty
+notifications:
+  email:
+    on_success: never
+    on_failure: always
 services:
   - postgresql
 postgres:
