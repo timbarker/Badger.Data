@@ -2,5 +2,11 @@ language: csharp
 mono: none
 dotnet: 2.0.0
 dist: trusty
+services:
+  - postgresql
+postgres:
+  username: postgres
+  password: postgres
 script:
-  dotnet build src/Badger.Data.sln
+  - dotnet build src/Badger.Data.sln
+  - dotnet test src/Badger.Data.Tests/Badger.Data.Tests.csproj
