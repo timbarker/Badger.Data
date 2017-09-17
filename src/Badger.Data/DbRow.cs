@@ -28,9 +28,15 @@ namespace Badger.Data
         {
             this.reader = reader;
         }
-        public T Get<T>(string column)
+        
+        public T Get<T>(string column, T @default = default(T))
         {
-            return (T)Readers[typeof(T)].Invoke(this.reader, this.reader.GetOrdinal(column));
+            var ordinal = this.reader.GetOrdinal(column);
+            var type = typeof(T);
+
+            return !reader.IsDBNull(ordinal) ? 
+                (T)Readers[Nullable.GetUnderlyingType(type) ?? type].Invoke(this.reader, ordinal) : 
+                @default;
         }
     }
 }

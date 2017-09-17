@@ -21,7 +21,9 @@ namespace Badger.Data.Tests.Postgres
                 @"create table people(
                     id bigserial primary key, 
                     name varchar(100) not null, 
-                    dob date not null)");
+                    dob date not null,
+                    height int null,
+                    address varchar(100) null)");
         }
 
         protected override void CreateTestDatabase()

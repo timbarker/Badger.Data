@@ -10,8 +10,18 @@ namespace Badger.Data.Tests
         public DbProviderFactory ProviderFactory { get; }
         public abstract string ConnectionString { get; }
         public string TestDatabase { get; }
-        public readonly Person TestPerson1 = new Person { Name = "Bill", Dob = new DateTime(2000, 1, 1)};
-        public readonly Person TestPerson2 = new Person { Name = "Ben", Dob = new DateTime(2001, 1, 1)};
+        public readonly Person TestPerson1 = new Person 
+            { 
+                Name = "Bill", 
+                Dob = new DateTime(2000, 1, 1),
+                Height = 180
+            };
+        public readonly Person TestPerson2 = new Person 
+            { 
+                Name = "Ben", 
+                Dob = new DateTime(2001, 1, 1),
+                Address = "1 Badger Row"
+            };
 
         protected DbTestFixture(DbProviderFactory providerFactory)
         {
@@ -40,13 +50,11 @@ namespace Badger.Data.Tests
 
         protected void InsertTestData()
         {
-            this.Connection.Execute(
-                "insert into people (name, dob) values (@Name, @Dob)",
-                TestPerson1);
+            var insertSql = @"insert into people (name, dob, height, address) 
+                              values (@Name, @Dob, @Height, @Address)";
+            this.Connection.Execute(insertSql, TestPerson1);
 
-            this.Connection.Execute(
-                "insert into people (name, dob) values (@Name, @Dob)",
-                TestPerson2);
+            this.Connection.Execute(insertSql, TestPerson2);
         }
         public virtual void Dispose()
         {

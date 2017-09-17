@@ -39,8 +39,14 @@ namespace Badger.Data.Tests
             {
                 var people = await session.ExecuteQueryAsync(new GetAllPeopleQuery());
 
-                people.ShouldContain(p => p.Name == this.fixture.TestPerson1.Name);
-                people.ShouldContain(p => p.Name == this.fixture.TestPerson2.Name);
+                people.ShouldContain(p => p.Name == this.fixture.TestPerson1.Name 
+                                       && p.Dob == this.fixture.TestPerson1.Dob
+                                       && p.Height == this.fixture.TestPerson1.Height
+                                       && p.Address == this.fixture.TestPerson1.Address);
+                people.ShouldContain(p => p.Name == this.fixture.TestPerson2.Name 
+                                       && p.Dob == this.fixture.TestPerson2.Dob
+                                       && p.Height == this.fixture.TestPerson2.Height
+                                       && p.Address == this.fixture.TestPerson2.Address);
             }
         }
 
@@ -49,12 +55,14 @@ namespace Badger.Data.Tests
             public IPreparedQuery<IEnumerable<Person>> Prepare(IQueryBuilder builder)
             {
                 return builder
-                    .WithSql("select id, name, dob from people")
+                    .WithSql("select id, name, dob, height, address from people")
                     .WithMapper(r => new Person 
                         { 
                             Id = r.Get<long>("id"), 
                             Name = r.Get<string>("name"), 
-                            Dob = r.Get<DateTime>("dob")
+                            Dob = r.Get<DateTime>("dob"),
+                            Height = r.Get<int?>("height"),
+                            Address = r.Get<string>("address")
                         })
                     .Build();
             }
@@ -183,6 +191,55 @@ namespace Badger.Data.Tests
             }
         }
 
+        
+        [Fact]
+        public void ExecuteSingleWithNullColumTest()
+        {
+            using (var session = this.sessionFactory.CreateSession())
+            {
+                var person = session.ExecuteQuery(
+                    new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
+
+                person.Address.ShouldBeNull();
+            }
+        }
+
+        [Fact]
+        public async Task ExecuteSingleWithNullColumAsyncTest()
+        {
+            using (var session = this.sessionFactory.CreateAsyncSession())
+            {
+                var person = await session.ExecuteQueryAsync(
+                    new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
+
+                person.Address.ShouldBeNull();
+            }
+        }
+
+        [Fact]
+        public void ExecuteSingleWithNullColumAndDefaultValueTest()
+        {
+            using (var session = this.sessionFactory.CreateSession())
+            {
+                var person = session.ExecuteQuery(
+                    new FindPersonByNameQuery(this.fixture.TestPerson2.Name));
+
+                person.Height.ShouldBe(-1);
+            }
+        }
+
+        [Fact]
+        public async Task ExecuteSingleWithNullColumAndDefaultValueAsyncTest()
+        {
+            using (var session = this.sessionFactory.CreateAsyncSession())
+            {
+                var person = await session.ExecuteQueryAsync(
+                    new FindPersonByNameQuery(this.fixture.TestPerson2.Name));
+
+                person.Height.ShouldBe(-1);
+            }
+        }
+
         [Fact]
         public void ExecuteSingleWhenNoRowsTest()
         {
@@ -219,12 +276,14 @@ namespace Badger.Data.Tests
             public IPreparedQuery<Person> Prepare(IQueryBuilder builder)
             {
                 return builder
-                    .WithSql("select name, dob from people where name = @name")
+                    .WithSql("select name, dob, height, address from people where name = @name")
                     .WithParameter("name", this.name)
                     .WithMapper(row => new Person 
                     {
                         Name = row.Get<string>("name"),
-                        Dob = row.Get<DateTime>("dob")
+                        Dob = row.Get<DateTime>("dob"),
+                        Height = row.Get<int>("height", -1),
+                        Address = row.Get<string>("address")
                     }, null)
                     .Build();
             }

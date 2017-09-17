@@ -20,7 +20,9 @@ namespace Badger.Data.Tests.Sqlite
                 @"create table people(
                     id integer primary key autoincrement, 
                     name text not null, 
-                    dob text not null)");
+                    dob text not null,
+                    height integer null,
+                    address text null)");
         }
 
         protected override void DestroyTestDatabase()
