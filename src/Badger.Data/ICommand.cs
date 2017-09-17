@@ -1,6 +1,7 @@
 namespace Badger.Data
 {
-    public interface ICommand : IDbOperation<IDbCommandBuilder>
+    public interface ICommand
     {
+        IPreparedCommand Prepare(ICommandBuilder builder);
     }
 }

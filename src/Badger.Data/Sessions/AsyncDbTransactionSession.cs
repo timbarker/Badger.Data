@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Badger.Data.Sessions
 {
-    sealed class AsyncDbTransactionSession : AsyncDbSession, IAsyncDbTransactionSession
+    internal sealed class AsyncTransactionSession : AsyncSession, IAsyncTransactionSession
     {
         private readonly IsolationLevel isolationLevel;
 
         private DbTransaction transaction;
 
-        public AsyncDbTransactionSession(DbConnection conn, IsolationLevel isolationLevel)
+        public AsyncTransactionSession(DbConnection conn, IsolationLevel isolationLevel)
             : base (conn)
         {
             this.isolationLevel = isolationLevel;

@@ -8,11 +8,11 @@ using Badger.Data.Commands;
 
 namespace Badger.Data.Sessions
 {
-    class AsyncDbSession : IAsyncDbSession
+    internal class AsyncSession : IAsyncSession
     {
         protected readonly DbConnection conn;
 
-        public AsyncDbSession(DbConnection conn)
+        public AsyncSession(DbConnection conn)
         {
             this.conn = conn;
         }
@@ -24,8 +24,8 @@ namespace Badger.Data.Sessions
 
         public async Task<int> ExecuteCommandAsync(ICommand command, CancellationToken cancellationToken)
         {
-            var builder = new Commands.DbCommandBuilder(await CreateCommandAsync(cancellationToken));
-            return await ((IDbExecutor<int>)command.Prepare(builder)).ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            var builder = new CommandBuilder(await CreateCommandAsync(cancellationToken));
+            return await command.Prepare(builder).ExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public Task<int> ExecuteCommandAsync(ICommand command)
@@ -33,35 +33,13 @@ namespace Badger.Data.Sessions
             return ExecuteCommandAsync(command, CancellationToken.None);
         }
 
-        public async Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
+        public async Task<TResult> ExecuteQueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
         {
-            var builder = new DbQueryBuilder<TResult>(await CreateCommandAsync(cancellationToken));
-            return await ((IDbExecutor<IEnumerable<TResult>>)query.Prepare(builder)).ExecuteAsync(cancellationToken).ConfigureAwait(false);
+            var builder = new QueryBuilder(await CreateCommandAsync(cancellationToken));
+            return await query.Prepare(builder).ExecuteAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<IEnumerable<TResult>> ExecuteQueryAsync<TResult>(IQuery<TResult> query)
-        {
-            return ExecuteQueryAsync(query, CancellationToken.None);
-        }
-
-        public async Task<TResult> ExecuteQueryAsync<TResult>(IQuerySingle<TResult> query, CancellationToken cancellationToken)
-        {
-            var builder = new DbQuerySingleBuilder<TResult>(await CreateCommandAsync(cancellationToken));
-            return await ((IDbExecutor<TResult>)query.Prepare(builder)).ExecuteAsync(cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task<TResult> ExecuteQueryAsync<TResult>(IQuerySingle<TResult> query)
-        {
-            return ExecuteQueryAsync(query, CancellationToken.None);
-        }
-
-        public async Task<TResult> ExecuteQueryAsync<TResult>(IQueryScalar<TResult> query, CancellationToken cancellationToken)
-        {
-            var builder = new DbQueryScalarBuilder<TResult>(await CreateCommandAsync(cancellationToken));
-            return await ((IDbExecutor<TResult>)query.Prepare(builder)).ExecuteAsync(cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task<TResult> ExecuteQueryAsync<TResult>(IQueryScalar<TResult> query)
+        public Task<TResult> ExecuteQueryAsync<TResult>(IQuery<TResult> query)
         {
             return ExecuteQueryAsync(query, CancellationToken.None);
         }

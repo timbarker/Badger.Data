@@ -4,7 +4,7 @@ using System.Data.Common;
 
 namespace Badger.Data
 {
-    sealed class DbRow : IDbRow
+    internal sealed class Row : IRow
     {
         private readonly DbDataReader reader;
 
@@ -24,7 +24,7 @@ namespace Badger.Data
                 [typeof(Guid)] = (r, i) => r.GetGuid(i),
             };
 
-        public DbRow(DbDataReader reader)
+        public Row(DbDataReader reader)
         {
             this.reader = reader;
         }

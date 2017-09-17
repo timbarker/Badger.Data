@@ -1,6 +1,6 @@
 namespace Badger.Data
 {
-    public  interface IDbTransactionSession : IDbSession
+    public  interface ITransactionSession : ISession
     {
         void Commit();
     }

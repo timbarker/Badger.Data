@@ -2,12 +2,12 @@ using System.Data.Common;
 
 namespace Badger.Data
 {
-    abstract class DbBaseBuilder<TBuilder> : IDbExecutorBuilder
-      where TBuilder : class, IDbExecutorBuilder
+    internal abstract class BaseBuilder<TBuilder> 
+      where TBuilder : class
     {
         protected readonly DbCommand command;
 
-        public DbBaseBuilder(DbCommand command)
+        public BaseBuilder(DbCommand command)
         {
             this.command = command;
         }
@@ -43,7 +43,5 @@ namespace Badger.Data
             this.command.CommandText = sql;
             return this as TBuilder;
         }
-
-        public abstract IDbExecutor Build();
     }
 }

@@ -4,12 +4,12 @@ using System.Data.Common;
 
 namespace Badger.Data.Sessions
 {
-    sealed class DbTransactionSession : DbSession, IDbTransactionSession
+    internal sealed class TransactionSession : Session, ITransactionSession
     {
         private readonly IsolationLevel isolationLevel;
         private DbTransaction transaction;
 
-        public DbTransactionSession(DbConnection conn, IsolationLevel isolationLevel)
+        public TransactionSession(DbConnection conn, IsolationLevel isolationLevel)
             : base(conn)
         {
             this.isolationLevel = isolationLevel;

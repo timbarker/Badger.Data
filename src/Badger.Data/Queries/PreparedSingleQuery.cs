@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Badger.Data.Queries
 {
-    sealed class DbQuerySingleExecutor<TResult> : IDbExecutor<TResult>
+    internal sealed class PreparedSingleQuery<TResult> : IPreparedQuery<TResult>
     {
         private readonly DbCommand command;
-        private readonly Func<IDbRow, TResult> mapper;
+        private readonly Func<IRow, TResult> mapper;
         private readonly TResult @default;
 
-        public DbQuerySingleExecutor(DbCommand command, Func<IDbRow, TResult> mapper, TResult @default)
+        public PreparedSingleQuery(DbCommand command, Func<IRow, TResult> mapper, TResult @default)
         {
             this.command = command;
             this.mapper = mapper;
@@ -22,7 +22,7 @@ namespace Badger.Data.Queries
         {
             using (var reader = this.command.ExecuteReader())
             {
-                var row = new DbRow(reader);
+                var row = new Row(reader);
                 if (reader.Read())
                     return mapper.Invoke(row);
                 
@@ -34,7 +34,7 @@ namespace Badger.Data.Queries
         {
             using (var reader = await this.command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
             {
-                var row = new DbRow(reader);
+                var row = new Row(reader);
                 if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                     return mapper.Invoke(row);
 

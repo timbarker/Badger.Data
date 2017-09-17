@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace Badger.Data.Commands
 {
-    sealed class DbCommandExecuter : IDbExecutor<int>
+    internal sealed class PreparedCommand : IPreparedCommand
     {
         private readonly DbCommand command;
 
-        public DbCommandExecuter(DbCommand command)
+        public PreparedCommand(DbCommand command)
         {
             this.command = command;
         }

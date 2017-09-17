@@ -1,6 +1,6 @@
 namespace Badger.Data
 {
-    public interface IDbRow
+    public interface IRow
     {
         T Get<T>(string column);
     }

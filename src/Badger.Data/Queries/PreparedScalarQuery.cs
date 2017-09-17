@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Badger.Data.Queries
 {
-    sealed class DbQueryScalarExecuter<T> : IDbExecutor<T>
+    internal sealed class PreparedScalarQuery<T> : IPreparedQuery<T>
     {
         private readonly DbCommand command;
         private readonly T @default;
 
-        public DbQueryScalarExecuter(DbCommand command, T @default)
+        public PreparedScalarQuery(DbCommand command, T @default)
         {
             this.command = command;
             this.@default = @default;

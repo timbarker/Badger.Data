@@ -1,6 +1,7 @@
 namespace Badger.Data
 {
-    public interface IQuery<TResult> : IDbOperation<IDbQueryBuilder<TResult>>
+    public interface IQuery<TResult> 
     {
+        IPreparedQuery<TResult> Prepare(IQueryBuilder queryBuilder);
     }
 }

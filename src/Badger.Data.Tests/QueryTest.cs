@@ -11,13 +11,13 @@ namespace Badger.Data.Tests
     public abstract class QueryTest<T> : IClassFixture<T> where T : DbTestFixture
     {
         private readonly T fixture;
-        private readonly DbSessionFactory sessionFactory;
+        private readonly SessionFactory sessionFactory;
 
         protected QueryTest(T fixture)
         {
             this.fixture = fixture;
 
-            this.sessionFactory = new DbSessionFactory(fixture.ProviderFactory, this.fixture.ConnectionString);
+            this.sessionFactory = new SessionFactory(fixture.ProviderFactory, this.fixture.ConnectionString);
         }
 
         [Fact]
@@ -44,9 +44,9 @@ namespace Badger.Data.Tests
             }
         }
 
-        class GetAllPeopleQuery : IQuery<Person>
+        class GetAllPeopleQuery : IQuery<IEnumerable<Person>>
         {
-            public IDbExecutor Prepare(IDbQueryBuilder<Person> builder)
+            public IPreparedQuery<IEnumerable<Person>> Prepare(IQueryBuilder builder)
             {
                 return builder
                     .WithSql("select id, name, dob from people")
@@ -82,12 +82,13 @@ namespace Badger.Data.Tests
             }
         }
 
-        class CountPeopleQuery : IQueryScalar<long>
+        class CountPeopleQuery : IQuery<long>
         {
-            public IDbExecutor Prepare(IDbQueryScalarBuilder<long> builder)
+            public IPreparedQuery<long> Prepare(IQueryBuilder builder)
             {
                 return builder
                     .WithSql("select count(*) from people")
+                    .WithDefault(0L)
                     .Build();
             }
         }
@@ -114,9 +115,9 @@ namespace Badger.Data.Tests
             }
         }
 
-        class NullScalarQueryWithDefault : IQueryScalar<long>
+        class NullScalarQueryWithDefault : IQuery<long>
         {
-            public IDbExecutor Prepare(IDbQueryScalarBuilder<long> builder)
+            public IPreparedQuery<long> Prepare(IQueryBuilder builder)
             {
                 return builder
                     .WithSql("select null")
@@ -147,12 +148,13 @@ namespace Badger.Data.Tests
             }
         }
 
-        class NullScalarQuery : IQueryScalar<string>
+        class NullScalarQuery : IQuery<string>
         {
-            public IDbExecutor Prepare(IDbQueryScalarBuilder<string> builder)
+            public IPreparedQuery<string> Prepare(IQueryBuilder builder)
             {
                 return builder
                     .WithSql("select null")
+                    .WithDefault<string>(null)
                     .Build();
             }
         }
@@ -205,7 +207,7 @@ namespace Badger.Data.Tests
             }
         }
 
-        class FindPersonByNameQuery : IQuerySingle<Person>
+        class FindPersonByNameQuery : IQuery<Person>
         {
             private readonly string name;
 
@@ -214,7 +216,7 @@ namespace Badger.Data.Tests
                 this.name = name;
             }
 
-            public IDbExecutor Prepare(IDbQuerySingleBuilder<Person> builder)
+            public IPreparedQuery<Person> Prepare(IQueryBuilder builder)
             {
                 return builder
                     .WithSql("select name, dob from people where name = @name")
@@ -223,7 +225,7 @@ namespace Badger.Data.Tests
                     {
                         Name = row.Get<string>("name"),
                         Dob = row.Get<DateTime>("dob")
-                    })
+                    }, null)
                     .Build();
             }
         }
