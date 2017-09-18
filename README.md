@@ -104,11 +104,11 @@ class FindPersonByNameQuery : IQuery<Person>
         return builder
             .WithSql("select name, dob from people where name = @name")
             .WithParameter("name", this.name)
-            .WithMapper(row => new Person 
+            .WithSingleMapper(row => new Person 
             {
                 Name = row.Get<string>("name"),
                 Dob = row.Get<DateTime>("dob")
-            }, null)
+            })
             .Build();
     }
 }
@@ -137,7 +137,7 @@ class CountPeopleQuery : IQuery<long>
     {
         return builder
             .WithSql("select count(*) from people")
-            .WithDefault(0L)
+            .WithScalar<long>()
             .Build();
     }
 }

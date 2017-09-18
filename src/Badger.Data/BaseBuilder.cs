@@ -1,3 +1,4 @@
+using System;
 using System.Data.Common;
 
 namespace Badger.Data
@@ -14,6 +15,9 @@ namespace Badger.Data
 
         protected TBuilder AddParameter<T>(string name, T value, int? size = null)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Paramter name must not be null or empty", nameof(name));
+
             var parameter = this.command.CreateParameter();
             parameter.ParameterName = name;
             parameter.Value = value;
@@ -40,6 +44,9 @@ namespace Badger.Data
 
         public TBuilder WithSql(string sql)
         {
+            if (string.IsNullOrEmpty(sql)) 
+                throw new ArgumentException("SQL must not be null or empty", nameof(sql));
+            
             this.command.CommandText = sql;
             return this as TBuilder;
         }

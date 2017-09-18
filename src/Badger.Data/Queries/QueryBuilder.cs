@@ -11,7 +11,7 @@ namespace Badger.Data.Queries
         {
         }
 
-        public IQueryBuilder<T> WithDefault<T>(T @default)
+        public IQueryBuilder<T> WithScalar<T>(T @default = default(T))
         {
             return new QueryScalarBuilder<T>(this.command, @default);
         }
@@ -21,7 +21,7 @@ namespace Badger.Data.Queries
             return new QueryManyBuilder<T>(this.command, mapper);
         }
 
-        public IQueryBuilder<T> WithMapper<T>(Func<IRow, T> mapper, T @default)
+        public IQueryBuilder<T> WithSingleMapper<T>(Func<IRow, T> mapper, T @default = default(T))
         {
             return new QuerySingleBuilder<T>(this.command, mapper, @default);
         }

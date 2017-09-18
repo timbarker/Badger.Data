@@ -96,7 +96,7 @@ namespace Badger.Data.Tests
             {
                 return builder
                     .WithSql("select count(*) from people")
-                    .WithDefault(0L)
+                    .WithScalar<long>()
                     .Build();
             }
         }
@@ -108,7 +108,7 @@ namespace Badger.Data.Tests
             {
                 var result = session.ExecuteQuery(new NullScalarQueryWithDefault());
 
-                result.ShouldBe(0);
+                result.ShouldBe(10);
             }
         }
 
@@ -119,7 +119,7 @@ namespace Badger.Data.Tests
             {
                 var result = await session.ExecuteQueryAsync(new NullScalarQueryWithDefault());
 
-                result.ShouldBe(0);
+                result.ShouldBe(10);
             }
         }
 
@@ -129,7 +129,7 @@ namespace Badger.Data.Tests
             {
                 return builder
                     .WithSql("select null")
-                    .WithDefault(0L)
+                    .WithScalar(10L)
                     .Build();
             }
         }
@@ -162,7 +162,7 @@ namespace Badger.Data.Tests
             {
                 return builder
                     .WithSql("select null")
-                    .WithDefault<string>(null)
+                    .WithScalar<string>()
                     .Build();
             }
         }
@@ -278,13 +278,13 @@ namespace Badger.Data.Tests
                 return builder
                     .WithSql("select name, dob, height, address from people where name = @name")
                     .WithParameter("name", this.name)
-                    .WithMapper(row => new Person 
+                    .WithSingleMapper(row => new Person 
                     {
                         Name = row.Get<string>("name"),
                         Dob = row.Get<DateTime>("dob"),
                         Height = row.Get<int>("height", -1),
                         Address = row.Get<string>("address")
-                    }, null)
+                    })
                     .Build();
             }
         }
