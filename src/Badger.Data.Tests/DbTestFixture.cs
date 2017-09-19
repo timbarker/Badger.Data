@@ -25,7 +25,7 @@ namespace Badger.Data.Tests
 
         protected DbTestFixture(DbProviderFactory providerFactory)
         {
-            this.TestDatabase = "badgerdata" + Guid.NewGuid().ToString().Replace("-", "");
+            this.TestDatabase = "badgerdata" + Guid.NewGuid().ToString("N");
 
             this.ProviderFactory = providerFactory;
         }

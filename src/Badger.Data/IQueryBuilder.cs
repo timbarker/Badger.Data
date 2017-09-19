@@ -41,6 +41,20 @@ namespace Badger.Data
         /// </summary>
         /// <param name="default">the default value.</param>
         IQueryBuilder<T> WithScalar<T>(T @default = default(T));
+
+        /// <summary>
+        /// Specifies a command timeout for the query
+        /// </summary>
+        /// <param name="timeout">the desired timeout.</param>
+        /// <returns></returns>
+        IQueryBuilder WithTimeout(TimeSpan timeout);
+
+        /// <summary>
+        /// Specifies a command timeout for the query
+        /// </summary>
+        /// <param name="timeout">the desired timeout.</param>
+        /// <returns></returns>
+        IQueryBuilder WithTimeout(int timeout);
     }
 
     /// <summary>

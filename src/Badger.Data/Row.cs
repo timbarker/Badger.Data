@@ -34,9 +34,9 @@ namespace Badger.Data
             var ordinal = this.reader.GetOrdinal(column);
             var type = typeof(T);
 
-            return !reader.IsDBNull(ordinal) ? 
-                (T)Readers[Nullable.GetUnderlyingType(type) ?? type].Invoke(this.reader, ordinal) : 
-                @default;
+            return !reader.IsDBNull(ordinal) 
+                ? (T)Readers[Nullable.GetUnderlyingType(type) ?? type].Invoke(this.reader, ordinal)
+                : @default;
         }
     }
 }
