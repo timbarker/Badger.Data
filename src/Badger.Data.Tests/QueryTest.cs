@@ -288,5 +288,11 @@ namespace Badger.Data.Tests
                     .Build();
             }
         }
+
+        [Fact]
+        public void QuerySessionWithNoExecutionsDoesNotThrow()
+        {
+            this.sessionFactory.CreateQuerySession().Dispose();
+        }
     }
 }

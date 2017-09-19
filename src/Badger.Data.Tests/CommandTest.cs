@@ -110,5 +110,20 @@ namespace Badger.Data.Tests
 
             result.ShouldBeNull();
         }
+
+        [Fact]
+        public void CommandSessionWithNoExecutionsDoesNotThrow()
+        {
+            this.sessionFactory.CreateCommandSession().Dispose();
+        }
+
+        [Fact]
+        public void CommittedCommandSessionWithNoExecutionsDoesNotThrow()
+        {
+            using (var session = this.sessionFactory.CreateCommandSession())
+            {
+                session.Commit();
+            }
+        }
     }
 }
