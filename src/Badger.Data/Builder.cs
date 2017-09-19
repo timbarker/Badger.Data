@@ -40,7 +40,18 @@ namespace Badger.Data
         public TBuilder WithParameter<T>(string name, T value) 
         {
             return AddParameter(name, value);
-        } 
+        }
+
+        public TBuilder WithTimeout(TimeSpan timeout)
+        {
+            return WithTimeout((int) timeout.TotalSeconds);
+        }
+
+        public TBuilder WithTimeout(int timeout)
+        {
+            this.command.CommandTimeout = timeout;
+            return this as TBuilder;
+        }
 
         public TBuilder WithSql(string sql)
         {
