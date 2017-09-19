@@ -35,9 +35,9 @@ class Program
     {
         var sessionFactory = new SessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
 
-        using (var session = sessionFactory.CreateAsyncSession())
+        using (var session = sessionFactory.CreateCommandSession())
         {
-            await session.ExecuteCommandAsync(new InsertPersonCommand("Bob", new DateTime(2000, 1, 1)));
+            await session.ExecuteAsync(new InsertPersonCommand("Bob", new DateTime(2000, 1, 1)));
         }
     }
 }
@@ -75,9 +75,9 @@ class Program
     {
         var sessionFactory = new SessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
 
-        using (var session = sessionFactory.CreateAsyncSession())
+        using (var session = sessionFactory.CreateQuerySession())
         {
-            var people = await session.ExecuteQueryAsync(new GetAllPeopleQuery());
+            var people = await session.ExecuteAsync(new GetAllPeopleQuery());
 
             foreach (var person in people)
             {
@@ -119,9 +119,9 @@ class Program
     {
         var sessionFactory = new SessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
 
-        using (var session = sessionFactory.CreateAsyncSession())
+        using (var session = sessionFactory.CreateQuerySession())
         {
-            var person = await session.ExecuteQueryAsync(new FindPersonByNameQuery("bob"));
+            var person = await session.ExecuteAsync(new FindPersonByNameQuery("bob"));
 
             Console.WriteLine($"{person.Name} born on {person.Dob}");
         }
@@ -148,9 +148,9 @@ class Program
     {
         var sessionFactory = new SessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
 
-        using (var session = sessionFactory.CreateAsyncSession())
+        using (var session = sessionFactory.CreateQuerySession())
         {
-            var count = await session.ExecuteQueryAsync(new CountPeopleQuery());
+            var count = await session.ExecuteAsync(new CountPeopleQuery());
 
             Console.WriteLine($"There are {count} people");
         }

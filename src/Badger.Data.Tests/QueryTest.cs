@@ -23,9 +23,9 @@ namespace Badger.Data.Tests
         [Fact]
         public void ExecuteQueryTest()
         {
-            using (var session = this.sessionFactory.CreateSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var people = session.ExecuteQuery(new GetAllPeopleQuery());
+                var people = session.Execute(new GetAllPeopleQuery());
 
                 people.ShouldContain(p => p.Name == this.fixture.TestPerson1.Name);
                 people.ShouldContain(p => p.Name == this.fixture.TestPerson2.Name);
@@ -35,9 +35,9 @@ namespace Badger.Data.Tests
         [Fact]
         public async Task ExecuteQueryAsyncTest()
         {
-            using (var session = this.sessionFactory.CreateAsyncSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var people = await session.ExecuteQueryAsync(new GetAllPeopleQuery());
+                var people = await session.ExecuteAsync(new GetAllPeopleQuery());
 
                 people.ShouldContain(p => p.Name == this.fixture.TestPerson1.Name 
                                        && p.Dob == this.fixture.TestPerson1.Dob
@@ -71,9 +71,9 @@ namespace Badger.Data.Tests
         [Fact]
         public void ExecuteScalarTest()
         {
-            using (var session = this.sessionFactory.CreateSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var peopleCount = session.ExecuteQuery(new CountPeopleQuery());
+                var peopleCount = session.Execute(new CountPeopleQuery());
 
                 peopleCount.ShouldBe(2);
             }
@@ -82,9 +82,9 @@ namespace Badger.Data.Tests
         [Fact]
         public async Task ExecuteScalarAsyncTest()
         {
-            using (var session = this.sessionFactory.CreateAsyncSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var peopleCount = await session.ExecuteQueryAsync(new CountPeopleQuery());
+                var peopleCount = await session.ExecuteAsync(new CountPeopleQuery());
 
                 peopleCount.ShouldBe(2);
             }
@@ -104,9 +104,9 @@ namespace Badger.Data.Tests
         [Fact]
         public void ExecuteScalarWhenNullWithDefaultTest()
         {
-            using (var session = this.sessionFactory.CreateSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var result = session.ExecuteQuery(new NullScalarQueryWithDefault());
+                var result = session.Execute(new NullScalarQueryWithDefault());
 
                 result.ShouldBe(10);
             }
@@ -115,9 +115,9 @@ namespace Badger.Data.Tests
         [Fact]
         public async Task ExecuteScalarWhenNullWithDefaultAsyncTest()
         {
-            using (var session = this.sessionFactory.CreateAsyncSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var result = await session.ExecuteQueryAsync(new NullScalarQueryWithDefault());
+                var result = await session.ExecuteAsync(new NullScalarQueryWithDefault());
 
                 result.ShouldBe(10);
             }
@@ -137,9 +137,9 @@ namespace Badger.Data.Tests
         [Fact]
         public void ExecuteQueryWhenNullTest()
         {
-            using (var session = this.sessionFactory.CreateSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var result = session.ExecuteQuery(new NullScalarQuery());
+                var result = session.Execute(new NullScalarQuery());
 
                 result.ShouldBeNull();
             }
@@ -148,9 +148,9 @@ namespace Badger.Data.Tests
         [Fact]
         public async Task ExecuteQueryWhenNullAsyncTest()
         {
-            using (var session = this.sessionFactory.CreateAsyncSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var result = await session.ExecuteQueryAsync(new NullScalarQuery());
+                var result = await session.ExecuteAsync(new NullScalarQuery());
 
                 result.ShouldBeNull();
             }
@@ -170,9 +170,9 @@ namespace Badger.Data.Tests
         [Fact]
         public void ExecuteSingleTest()
         {
-            using (var session = this.sessionFactory.CreateSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var person = session.ExecuteQuery(
+                var person = session.Execute(
                     new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
                 person.Dob.ShouldBe(this.fixture.TestPerson1.Dob);
@@ -182,9 +182,9 @@ namespace Badger.Data.Tests
         [Fact]
         public async Task ExecuteSingleAsyncTest()
         {
-            using (var session = this.sessionFactory.CreateAsyncSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var person = await session.ExecuteQueryAsync(
+                var person = await session.ExecuteAsync(
                     new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
                 person.Dob.ShouldBe(this.fixture.TestPerson1.Dob);
@@ -195,9 +195,9 @@ namespace Badger.Data.Tests
         [Fact]
         public void ExecuteSingleWithNullColumTest()
         {
-            using (var session = this.sessionFactory.CreateSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var person = session.ExecuteQuery(
+                var person = session.Execute(
                     new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
                 person.Address.ShouldBeNull();
@@ -207,9 +207,9 @@ namespace Badger.Data.Tests
         [Fact]
         public async Task ExecuteSingleWithNullColumAsyncTest()
         {
-            using (var session = this.sessionFactory.CreateAsyncSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var person = await session.ExecuteQueryAsync(
+                var person = await session.ExecuteAsync(
                     new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
                 person.Address.ShouldBeNull();
@@ -219,9 +219,9 @@ namespace Badger.Data.Tests
         [Fact]
         public void ExecuteSingleWithNullColumAndDefaultValueTest()
         {
-            using (var session = this.sessionFactory.CreateSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var person = session.ExecuteQuery(
+                var person = session.Execute(
                     new FindPersonByNameQuery(this.fixture.TestPerson2.Name));
 
                 person.Height.ShouldBe(-1);
@@ -231,9 +231,9 @@ namespace Badger.Data.Tests
         [Fact]
         public async Task ExecuteSingleWithNullColumAndDefaultValueAsyncTest()
         {
-            using (var session = this.sessionFactory.CreateAsyncSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var person = await session.ExecuteQueryAsync(
+                var person = await session.ExecuteAsync(
                     new FindPersonByNameQuery(this.fixture.TestPerson2.Name));
 
                 person.Height.ShouldBe(-1);
@@ -243,9 +243,9 @@ namespace Badger.Data.Tests
         [Fact]
         public void ExecuteSingleWhenNoRowsTest()
         {
-            using (var session = this.sessionFactory.CreateSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var person = session.ExecuteQuery(
+                var person = session.Execute(
                     new FindPersonByNameQuery("invalid name"));
 
                 person.ShouldBeNull();
@@ -255,9 +255,9 @@ namespace Badger.Data.Tests
         [Fact]
         public async Task ExecuteSingleWhenNoRowsAsyncTest()
         {
-            using (var session = this.sessionFactory.CreateAsyncSession())
+            using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var person = await session.ExecuteQueryAsync(
+                var person = await session.ExecuteAsync(
                     new FindPersonByNameQuery("invalid name"));
 
                 person.ShouldBeNull();

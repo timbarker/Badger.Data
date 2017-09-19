@@ -4,7 +4,7 @@ using System.Data.Common;
 
 namespace Badger.Data.Queries
 {
-    internal sealed class QueryBuilder : BaseBuilder<IQueryBuilder>, IQueryBuilder
+    internal sealed class QueryBuilder : Builder<IQueryBuilder>, IQueryBuilder
     {
         public QueryBuilder(DbCommand command)
             : base(command)

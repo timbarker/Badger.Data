@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Badger.Data.Commands
 {
-    internal sealed class CommandBuilder : BaseBuilder<ICommandBuilder>, ICommandBuilder
+    internal sealed class CommandBuilder : Builder<ICommandBuilder>, ICommandBuilder
     {
         public CommandBuilder(DbCommand command)
             : base (command)

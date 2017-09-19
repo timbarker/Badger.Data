@@ -1,54 +1,58 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using Badger.Data.Queries;
-using Badger.Data.Commands;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Badger.Data.Sessions
 {
-    internal class Session : ISession
+    internal abstract class Session : IDisposable
     {
-        protected readonly DbConnection conn;
+        private readonly DbConnection connection;
+        private readonly IsolationLevel isolationLevel;
+        private DbTransaction transaction;
 
-        public Session(DbConnection conn)
+        protected Session(DbConnection connection, IsolationLevel isolationLevel)
         {
-            this.conn = conn;
+            this.connection = connection;
+            this.isolationLevel = isolationLevel;
         }
 
         public void Dispose()
         {
-            this.conn.Dispose();
+            this.transaction?.Dispose();
+            this.connection.Dispose();
         }
 
-        public int ExecuteCommand(ICommand command)
+        public void Commit()
         {
-            var builder = new CommandBuilder(CreateCommand());
-            return command.Prepare(builder).Execute();
+            this.transaction?.Commit();
         }
 
-        public TResult ExecuteQuery<TResult>(IQuery<TResult> query)
+        protected DbCommand CreateCommand()
         {
-            var builder = new QueryBuilder(CreateCommand());
-            return query.Prepare(builder).Execute();
-        }
-        
-        protected virtual DbCommand CreateCommand()
-        {
-            EnsureConnection();
+            if (this.connection.State != ConnectionState.Open)
+            {
+                this.connection.Open();
+                this.transaction = this.connection.BeginTransaction(this.isolationLevel);
+            }
 
-            return this.conn.CreateCommand();
-        }
-
-        private void EnsureConnection()
-        {
-            if (this.conn.State == ConnectionState.Closed)
-                OpenConnection();
+            var command = this.connection.CreateCommand();
+            command.Transaction = this.transaction;
+            return command;
         }
 
-        protected virtual void OpenConnection()
+        protected async Task<DbCommand> CreateCommandAsync(CancellationToken cancellationToken)
         {
-            this.conn.Open(); 
+            if (this.connection.State != ConnectionState.Open)
+            {
+                await this.connection.OpenAsync(cancellationToken);
+                this.transaction = this.connection.BeginTransaction(this.isolationLevel);
+            }
+
+            var command = this.connection.CreateCommand();
+            command.Transaction = this.transaction;
+            return command;
         }
     }
 }

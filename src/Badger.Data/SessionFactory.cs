@@ -15,24 +15,14 @@ namespace Badger.Data
             this.connectionString = connectionString;
         }
 
-        public IAsyncSession CreateAsyncSession()
+        public ICommandSession CreateCommandSession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
-            return new AsyncSession(CreateConnection());
+            return new CommandSession(CreateConnection(), isolationLevel);
         }
 
-        public IAsyncTransactionSession CreateAsyncTransactionSession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        public IQuerySession CreateQuerySession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
-            return new AsyncTransactionSession(CreateConnection(), isolationLevel);
-        }
-
-        public ISession CreateSession()
-        {
-            return new Session(CreateConnection());
-        }
-
-        public ITransactionSession CreateTransactionSession(IsolationLevel isolationLevel)
-        {
-            return new TransactionSession(CreateConnection(), isolationLevel);
+            return new QuerySession(CreateConnection(), isolationLevel);
         }
 
         private DbConnection CreateConnection()

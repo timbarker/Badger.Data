@@ -3,12 +3,12 @@ using System.Data.Common;
 
 namespace Badger.Data
 {
-    internal abstract class BaseBuilder<TBuilder> 
+    internal abstract class Builder<TBuilder> 
       where TBuilder : class
     {
         protected readonly DbCommand command;
 
-        public BaseBuilder(DbCommand command)
+        public Builder(DbCommand command)
         {
             this.command = command;
         }
