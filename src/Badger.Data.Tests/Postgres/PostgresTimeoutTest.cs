@@ -37,7 +37,7 @@ namespace Badger.Data.Tests.Postgres
         }
 
         [Fact]
-        public void QueryThrowsWhenQueryExceedsTimeout()
+        public void ThrowsWhenQueryExceedsTimeout()
         {
             Assert.Throws<NpgsqlException>(() =>
             {
@@ -49,13 +49,36 @@ namespace Badger.Data.Tests.Postgres
         }
 
         [Fact]
-        public void QueryDoesNotThrowWhenQueryDoesntExceedTimeout()
+        public void DoesNotThrowWhenQueryDoesntExceedTimeout()
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var result = session.Execute(new TimeoutQuery(1, 5));
                 result.ShouldBe(42);
             }
+        }
+
+        class TimeoutCommand : ICommand
+        {
+            public IPreparedCommand Prepare(ICommandBuilder commandBuilder)
+            {
+                return commandBuilder
+                    .WithSql("select pg_sleep(5)")
+                    .WithTimeout(TimeSpan.FromSeconds(1))
+                    .Build();
+            }
+        }
+
+        [Fact]
+        public void ThrowsWhenCommandExceedsTimeout()
+        {
+            Assert.Throws<NpgsqlException>(() =>
+            {
+                using (var session = this.sessionFactory.CreateCommandSession())
+                {
+                    session.Execute(new TimeoutCommand());
+                }
+            });
         }
     }
 }

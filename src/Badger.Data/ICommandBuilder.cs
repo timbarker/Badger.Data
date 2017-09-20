@@ -1,3 +1,5 @@
+using System;
+
 namespace Badger.Data
 {
     /// <summary>
@@ -25,7 +27,14 @@ namespace Badger.Data
         /// <param name="value">the parameter value.</param>
         /// <param name="length">the max length of the string.</param>
         ICommandBuilder WithParameter(string name, string value, int length);
-        
+
+        /// <summary>
+        /// Specifies a command timeout for the query
+        /// </summary>
+        /// <param name="timeout">the desired timeout.</param>
+        /// <returns></returns>
+        ICommandBuilder WithTimeout(TimeSpan timeout);
+
         /// <summary>
         /// Builds the prepared command.
         /// </summary>
