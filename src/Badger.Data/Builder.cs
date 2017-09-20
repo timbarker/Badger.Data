@@ -25,7 +25,7 @@ namespace Badger.Data
             if (size.HasValue)
                 parameter.Size = size.Value;
             else if (typeof(T) == typeof(string))
-                parameter.Size = size ?? (value as string).Length;
+                parameter.Size = (value as string).Length;
 
             this.command.Parameters.Add(parameter);
 
@@ -44,12 +44,7 @@ namespace Badger.Data
 
         public TBuilder WithTimeout(TimeSpan timeout)
         {
-            return WithTimeout((int) timeout.TotalSeconds);
-        }
-
-        public TBuilder WithTimeout(int timeout)
-        {
-            this.command.CommandTimeout = timeout;
+            this.command.CommandTimeout = (int)timeout.TotalSeconds;
             return this as TBuilder;
         }
 

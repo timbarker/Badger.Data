@@ -48,13 +48,6 @@ namespace Badger.Data
         /// <param name="timeout">the desired timeout.</param>
         /// <returns></returns>
         IQueryBuilder WithTimeout(TimeSpan timeout);
-
-        /// <summary>
-        /// Specifies a command timeout for the query
-        /// </summary>
-        /// <param name="timeout">the desired timeout.</param>
-        /// <returns></returns>
-        IQueryBuilder WithTimeout(int timeout);
     }
 
     /// <summary>
