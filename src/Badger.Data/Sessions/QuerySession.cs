@@ -19,15 +19,10 @@ namespace Badger.Data.Sessions
             return query.Prepare(builder).Execute();
         }
 
-        public async Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
+        public async Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
         {
             var builder = new QueryBuilder(await CreateCommandAsync(cancellationToken));
             return await query.Prepare(builder).ExecuteAsync(cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query)
-        {
-            return ExecuteAsync(query, CancellationToken.None);
         }
     }
 }

@@ -19,16 +19,11 @@ namespace Badger.Data.Sessions
             return command.Prepare(builder).Execute();
         }
 
-        public async Task<int> ExecuteAsync(ICommand command, CancellationToken cancellationToken)
+        public async Task<int> ExecuteAsync(ICommand command, CancellationToken cancellationToken = default)
         {
             var builder = new CommandBuilder(await CreateCommandAsync(cancellationToken));
             return await command.Prepare(builder).ExecuteAsync(cancellationToken).ConfigureAwait(false);
   
-        }
-
-        public Task<int> ExecuteAsync(ICommand command)
-        {
-            return ExecuteAsync(command, CancellationToken.None);
         }
     }
 }
