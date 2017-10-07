@@ -38,6 +38,8 @@ class Program
         using (var session = sessionFactory.CreateCommandSession())
         {
             await session.ExecuteAsync(new InsertPersonCommand("Bob", new DateTime(2000, 1, 1)));
+
+            session.Commit();
         }
     }
 }
