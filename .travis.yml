@@ -6,15 +6,17 @@ notifications:
   email:
     on_success: never
     on_failure: always
+env:
+    - PACKAGE_VERSION=1.0.$TRAVIS_BUILD_NUMBER
 services:
   - postgresql
 postgres:
   username: postgres
   password: postgres
 script:
-  - dotnet build src/Badger.Data.sln -c Release
+  - dotnet build src/Badger.Data.sln -c Release 
   - dotnet test src/Badger.Data.Tests/Badger.Data.Tests.csproj -c Release
-  - dotnet pack src/Badger.Data/Badger.Data.csproj -c Release -o nuget -p:PackageVersion=1.0.$TRAVIS_BUILD_NUMBER
+  - dotnet pack src/Badger.Data/Badger.Data.csproj -c Release -o nuget -p:PackageVersion=$PACKAGE_VERSION -p:FileVersion=$PACKAGE_VERSION
 deploy:
   skip_cleanup: true
   provider: script
