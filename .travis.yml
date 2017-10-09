@@ -12,5 +12,12 @@ postgres:
   username: postgres
   password: postgres
 script:
-  - dotnet build src/Badger.Data.sln
-  - dotnet test src/Badger.Data.Tests/Badger.Data.Tests.csproj
+  - dotnet build src/Badger.Data.sln -c Release
+  - dotnet test src/Badger.Data.Tests/Badger.Data.Tests.csproj -c Release
+  - dotnet pack src/Badger.Data/Badger.Data.csproj -c Release -o nuget -p:PackageVersion=1.0.$TRAVIS_BUILD_NUMBER
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: dotnet nuget push src/Badger.Data/nuget/Badger.Data.*.nupkg -k $NUGET_KEY -s https://nuget.org
+  on:
+    branch: master
