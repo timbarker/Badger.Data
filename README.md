@@ -2,6 +2,7 @@
 Simple data access for .net
 
 [![Build Status](https://travis-ci.org/timbarker/Badger.Data.svg?branch=master)](https://travis-ci.org/timbarker/Badger.Data)
+[![Nuget Package](https://img.shields.io/nuget/v/Badger.Data.svg?style=flat)](https://www.nuget.org/packages/Badger.Data/)
 
 ## Examples
 
