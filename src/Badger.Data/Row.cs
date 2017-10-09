@@ -13,6 +13,7 @@ namespace Badger.Data
             {
                 [typeof(char)] = (r, i) => r.GetChar(i),
                 [typeof(bool)] = (r, i) => r.GetBoolean(i),
+                [typeof(byte)] = (r, i) => r.GetByte(i),
                 [typeof(short)] = (r, i) => r.GetInt16(i),
                 [typeof(int)] = (r, i) => r.GetInt32(i),
                 [typeof(long)] = (r, i) => r.GetInt64(i),
