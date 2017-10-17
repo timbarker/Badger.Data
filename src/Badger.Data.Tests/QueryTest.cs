@@ -11,7 +11,7 @@ namespace Badger.Data.Tests
     public abstract class QueryTest<T> : IClassFixture<T> where T : DbTestFixture
     {
         private readonly T fixture;
-        private readonly SessionFactory sessionFactory;
+        protected readonly SessionFactory sessionFactory;
 
         protected QueryTest(T fixture)
         {
