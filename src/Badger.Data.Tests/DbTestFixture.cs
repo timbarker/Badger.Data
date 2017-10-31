@@ -1,6 +1,7 @@
 using Dapper;
 using System;
 using System.Data.Common;
+using Badger.Data.Tests.Queries;
 
 namespace Badger.Data.Tests
 {
@@ -9,7 +10,9 @@ namespace Badger.Data.Tests
         public DbConnection Connection { get; private set;}
         public DbProviderFactory ProviderFactory { get; }
         public abstract string ConnectionString { get; }
-        public string TestDatabase { get; }
+        protected string TestDatabase { get; }
+        public QueryFactory QueryFactory { get; }
+
         public readonly Person TestPerson1 = new Person 
             { 
                 Name = "Bill", 
@@ -23,8 +26,10 @@ namespace Badger.Data.Tests
                 Address = "1 Badger Row"
             };
 
-        protected DbTestFixture(DbProviderFactory providerFactory)
+        protected DbTestFixture(DbProviderFactory providerFactory, QueryFactory queryFactory = null)
         {
+            QueryFactory = queryFactory ?? new QueryFactory();
+
             this.TestDatabase = "badgerdata" + Guid.NewGuid().ToString("N");
 
             this.ProviderFactory = providerFactory;

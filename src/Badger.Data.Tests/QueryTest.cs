@@ -1,9 +1,5 @@
 using Shouldly;
-using System;
-using System.Collections.Generic;
 using Xunit;
-using Microsoft.Data.Sqlite;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Badger.Data.Tests
@@ -25,7 +21,7 @@ namespace Badger.Data.Tests
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var people = session.Execute(new GetAllPeopleQuery());
+                var people = session.Execute(fixture.QueryFactory.CreateGetAllPeopleQuery());
 
                 people.ShouldContain(p => p.Name == this.fixture.TestPerson1.Name);
                 people.ShouldContain(p => p.Name == this.fixture.TestPerson2.Name);
@@ -37,7 +33,7 @@ namespace Badger.Data.Tests
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var people = await session.ExecuteAsync(new GetAllPeopleQuery());
+                var people = await session.ExecuteAsync(fixture.QueryFactory.CreateGetAllPeopleQuery());
 
                 people.ShouldContain(p => p.Name == this.fixture.TestPerson1.Name 
                                        && p.Dob == this.fixture.TestPerson1.Dob
@@ -50,30 +46,12 @@ namespace Badger.Data.Tests
             }
         }
 
-        class GetAllPeopleQuery : IQuery<IEnumerable<Person>>
-        {
-            public IPreparedQuery<IEnumerable<Person>> Prepare(IQueryBuilder builder)
-            {
-                return builder
-                    .WithSql("select id, name, dob, height, address from people")
-                    .WithMapper(r => new Person 
-                        { 
-                            Id = r.Get<long>("id"), 
-                            Name = r.Get<string>("name"), 
-                            Dob = r.Get<DateTime>("dob"),
-                            Height = r.Get<int?>("height"),
-                            Address = r.Get<string>("address")
-                        })
-                    .Build();
-            }
-        }
-
         [Fact]
         public void ExecuteScalarTest()
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var peopleCount = session.Execute(new CountPeopleQuery());
+                var peopleCount = session.Execute(fixture.QueryFactory.CreateCountPeopleQuery());
 
                 peopleCount.ShouldBe(2);
             }
@@ -84,20 +62,9 @@ namespace Badger.Data.Tests
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var peopleCount = await session.ExecuteAsync(new CountPeopleQuery());
+                var peopleCount = await session.ExecuteAsync(fixture.QueryFactory.CreateCountPeopleQuery());
 
                 peopleCount.ShouldBe(2);
-            }
-        }
-
-        class CountPeopleQuery : IQuery<long>
-        {
-            public IPreparedQuery<long> Prepare(IQueryBuilder builder)
-            {
-                return builder
-                    .WithSql("select count(*) from people")
-                    .WithScalar<long>()
-                    .Build();
             }
         }
 
@@ -106,7 +73,7 @@ namespace Badger.Data.Tests
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var result = session.Execute(new NullScalarQueryWithDefault());
+                var result = session.Execute(fixture.QueryFactory.CreateNullScalarWithDefaultQuery());
 
                 result.ShouldBe(10);
             }
@@ -117,20 +84,9 @@ namespace Badger.Data.Tests
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var result = await session.ExecuteAsync(new NullScalarQueryWithDefault());
+                var result = await session.ExecuteAsync(fixture.QueryFactory.CreateNullScalarWithDefaultQuery());
 
                 result.ShouldBe(10);
-            }
-        }
-
-        class NullScalarQueryWithDefault : IQuery<long>
-        {
-            public IPreparedQuery<long> Prepare(IQueryBuilder builder)
-            {
-                return builder
-                    .WithSql("select null")
-                    .WithScalar(10L)
-                    .Build();
             }
         }
 
@@ -139,7 +95,7 @@ namespace Badger.Data.Tests
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var result = session.Execute(new NullScalarQuery());
+                var result = session.Execute(fixture.QueryFactory.CreateNullScalarQuery());
 
                 result.ShouldBeNull();
             }
@@ -150,20 +106,9 @@ namespace Badger.Data.Tests
         {
             using (var session = this.sessionFactory.CreateQuerySession())
             {
-                var result = await session.ExecuteAsync(new NullScalarQuery());
+                var result = await session.ExecuteAsync(fixture.QueryFactory.CreateNullScalarQuery());
 
                 result.ShouldBeNull();
-            }
-        }
-
-        class NullScalarQuery : IQuery<string>
-        {
-            public IPreparedQuery<string> Prepare(IQueryBuilder builder)
-            {
-                return builder
-                    .WithSql("select null")
-                    .WithScalar<string>()
-                    .Build();
             }
         }
 
@@ -173,7 +118,7 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var person = session.Execute(
-                    new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
+                    fixture.QueryFactory.CreateFindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
                 person.Dob.ShouldBe(this.fixture.TestPerson1.Dob);
             }
@@ -185,7 +130,7 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var person = await session.ExecuteAsync(
-                    new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
+                    fixture.QueryFactory.CreateFindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
                 person.Dob.ShouldBe(this.fixture.TestPerson1.Dob);
             }
@@ -198,7 +143,7 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var person = session.Execute(
-                    new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
+                    fixture.QueryFactory.CreateFindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
                 person.Address.ShouldBeNull();
             }
@@ -210,7 +155,7 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var person = await session.ExecuteAsync(
-                    new FindPersonByNameQuery(this.fixture.TestPerson1.Name));
+                    fixture.QueryFactory.CreateFindPersonByNameQuery(this.fixture.TestPerson1.Name));
 
                 person.Address.ShouldBeNull();
             }
@@ -222,7 +167,7 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var person = session.Execute(
-                    new FindPersonByNameQuery(this.fixture.TestPerson2.Name));
+                    fixture.QueryFactory.CreateFindPersonByNameQuery(this.fixture.TestPerson2.Name));
 
                 person.Height.ShouldBe(-1);
             }
@@ -234,7 +179,7 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var person = await session.ExecuteAsync(
-                    new FindPersonByNameQuery(this.fixture.TestPerson2.Name));
+                    fixture.QueryFactory.CreateFindPersonByNameQuery(this.fixture.TestPerson2.Name));
 
                 person.Height.ShouldBe(-1);
             }
@@ -246,7 +191,7 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var person = session.Execute(
-                    new FindPersonByNameQuery("invalid name"));
+                    fixture.QueryFactory.CreateFindPersonByNameQuery("invalid name"));
 
                 person.ShouldBeNull();
             }
@@ -258,34 +203,9 @@ namespace Badger.Data.Tests
             using (var session = this.sessionFactory.CreateQuerySession())
             {
                 var person = await session.ExecuteAsync(
-                    new FindPersonByNameQuery("invalid name"));
+                    fixture.QueryFactory.CreateFindPersonByNameQuery("invalid name"));
 
                 person.ShouldBeNull();
-            }
-        }
-
-        class FindPersonByNameQuery : IQuery<Person>
-        {
-            private readonly string name;
-
-            public FindPersonByNameQuery(string name)
-            {
-                this.name = name;
-            }
-
-            public IPreparedQuery<Person> Prepare(IQueryBuilder builder)
-            {
-                return builder
-                    .WithSql("select name, dob, height, address from people where name = @name")
-                    .WithParameter("name", this.name)
-                    .WithSingleMapper(row => new Person 
-                    {
-                        Name = row.Get<string>("name"),
-                        Dob = row.Get<DateTime>("dob"),
-                        Height = row.Get<int>("height", -1),
-                        Address = row.Get<string>("address")
-                    })
-                    .Build();
             }
         }
 

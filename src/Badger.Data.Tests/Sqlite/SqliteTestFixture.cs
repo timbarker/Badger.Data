@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -8,6 +7,7 @@ namespace Badger.Data.Tests.Sqlite
     public class SqliteTestFixture : DbTestFixture
     {
         public override string ConnectionString => $"Data Source={this.TestDatabase}";
+
         public SqliteTestFixture()
             : base (SqliteFactory.Instance)
         {
