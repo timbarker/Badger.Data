@@ -15,7 +15,7 @@ postgres:
   password: postgres
 script:
   - dotnet build src/Badger.Data.sln -c Release 
-  - dotnet test src/Badger.Data.Tests/Badger.Data.Tests.csproj -c Release --filter Travis=True
+  - dotnet test src/Badger.Data.Tests/Badger.Data.Tests.csproj -c Release --filter ExcludeFromTravis!=True
   - dotnet pack src/Badger.Data/Badger.Data.csproj -c Release -o nuget -p:PackageVersion=$PACKAGE_VERSION -p:FileVersion=$PACKAGE_VERSION
 deploy:
   skip_cleanup: true
