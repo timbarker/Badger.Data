@@ -6,7 +6,7 @@ namespace Badger.Data
 {
     internal sealed class Row : IRow
     {
-        private readonly DbDataReader reader;
+        private readonly DbDataReader _reader;
 
         private static readonly IDictionary<Type, Func<DbDataReader, int, object>> Readers = 
             new Dictionary<Type, Func<DbDataReader, int, object>> 
@@ -22,21 +22,21 @@ namespace Badger.Data
                 [typeof(decimal)] = (r, i) => r.GetDecimal(i),
                 [typeof(string)] = (r, i) => r.GetString(i),
                 [typeof(DateTime)] = (r, i) => r.GetDateTime(i),
-                [typeof(Guid)] = (r, i) => r.GetGuid(i),
+                [typeof(Guid)] = (r, i) => r.GetGuid(i)
             };
 
         public Row(DbDataReader reader)
         {
-            this.reader = reader;
+            this._reader = reader;
         }
         
-        public T Get<T>(string column, T @default = default(T))
+        public T Get<T>(string column, T @default = default)
         {
-            var ordinal = this.reader.GetOrdinal(column);
+            var ordinal = _reader.GetOrdinal(column);
             var type = typeof(T);
 
-            return !reader.IsDBNull(ordinal) 
-                ? (T)Readers[Nullable.GetUnderlyingType(type) ?? type].Invoke(this.reader, ordinal)
+            return !_reader.IsDBNull(ordinal) 
+                ? (T)Readers[Nullable.GetUnderlyingType(type) ?? type].Invoke(_reader, ordinal)
                 : @default;
         }
     }

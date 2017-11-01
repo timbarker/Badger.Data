@@ -6,21 +6,21 @@ namespace Badger.Data.Commands
 {
     internal sealed class PreparedCommand : IPreparedCommand
     {
-        private readonly DbCommand command;
+        private readonly DbCommand _command;
 
         public PreparedCommand(DbCommand command)
         {
-            this.command = command;
+            this._command = command;
         }
 
         public int Execute()
         {
-            return this.command.ExecuteNonQuery();
+            return _command.ExecuteNonQuery();
         }
 
         public async Task<int> ExecuteAsync(CancellationToken cancellationToken)
         {
-            return await this.command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            return await _command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -4,17 +4,17 @@ namespace Badger.Data.Queries
 {
     internal sealed class QueryScalarBuilder<T> : IQueryBuilder<T>
     {
-        private readonly DbCommand command;
-        private readonly T @default;
+        private readonly DbCommand _command;
+        private readonly T _default;
 
         public QueryScalarBuilder(DbCommand command, T @default)
         {
-            this.command = command;
-            this.@default = @default;
+            this._command = command;
+            this._default = @default;
         }
         public IPreparedQuery<T> Build()
         {
-            return new PreparedScalarQuery<T>(this.command, this.@default);
+            return new PreparedScalarQuery<T>(_command, _default);
         }
     }
 

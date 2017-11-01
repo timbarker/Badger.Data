@@ -1,6 +1,7 @@
-using Dapper;
 using System;
 using System.Data.Common;
+using Badger.Data.Tests.Queries;
+using Dapper;
 
 namespace Badger.Data.Tests
 {
@@ -9,7 +10,9 @@ namespace Badger.Data.Tests
         public DbConnection Connection { get; private set;}
         public DbProviderFactory ProviderFactory { get; }
         public abstract string ConnectionString { get; }
-        public string TestDatabase { get; }
+        protected string TestDatabase { get; }
+        public QueryFactory QueryFactory { get; }
+
         public readonly Person TestPerson1 = new Person 
             { 
                 Name = "Bill", 
@@ -23,11 +26,13 @@ namespace Badger.Data.Tests
                 Address = "1 Badger Row"
             };
 
-        protected DbTestFixture(DbProviderFactory providerFactory)
+        protected DbTestFixture(DbProviderFactory providerFactory, QueryFactory queryFactory = null)
         {
-            this.TestDatabase = "badgerdata" + Guid.NewGuid().ToString("N");
+            QueryFactory = queryFactory ?? new QueryFactory();
 
-            this.ProviderFactory = providerFactory;
+            TestDatabase = "badgerdata" + Guid.NewGuid().ToString("N");
+
+            ProviderFactory = providerFactory;
         }
 
         protected void InitTestDatabase()
@@ -42,23 +47,30 @@ namespace Badger.Data.Tests
 
         private void OpenTestConnection()
         {
-            this.Connection = this.ProviderFactory.CreateConnection();
-            this.Connection.ConnectionString = this.ConnectionString;
-            this.Connection.Open();
+            Connection = ProviderFactory.CreateConnection();
+            Connection.ConnectionString = ConnectionString;
+            Connection.Open();
         }
         protected abstract void CreateTestTables();
+
+        public virtual ISessionFactory CreateSessionFactory()
+        {
+            return SessionFactory.With(config =>
+                config.WithConnectionString(ConnectionString)
+                      .WithProviderFactory(ProviderFactory));
+        }
 
         protected void InsertTestData()
         {
             var insertSql = @"insert into people (name, dob, height, address) 
                               values (@Name, @Dob, @Height, @Address)";
-            this.Connection.Execute(insertSql, TestPerson1);
+            Connection.Execute(insertSql, TestPerson1);
 
-            this.Connection.Execute(insertSql, TestPerson2);
+            Connection.Execute(insertSql, TestPerson2);
         }
         public virtual void Dispose()
         {
-            this.Connection.Dispose();
+            Connection.Dispose();
             DestroyTestDatabase();
         }
 

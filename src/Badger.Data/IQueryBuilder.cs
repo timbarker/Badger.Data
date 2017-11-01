@@ -19,8 +19,11 @@ namespace Badger.Data
         /// </summary>
         /// <param name="name">the name of the query parameter.</param>
         /// <param name="value">the parameter value.</param>
-        IQueryBuilder WithParameter<TParam>(string name, TParam value);
-        
+        IQueryBuilder WithParameter(string name, object value);
+
+
+        IQueryBuilder WithTableParameter<T>(string name, IEnumerable<T> value);
+
         /// <summary>
         /// Sets up a mapper for reading a multiple row result set.
         /// </summary>
@@ -33,14 +36,14 @@ namespace Badger.Data
         /// </summary>
         /// <param name="mapper">the mapping function.</param>
         /// <param name="default">the default value.</param>
-        IQueryBuilder<T> WithSingleMapper<T>(Func<IRow, T> mapper, T @default = default(T));
+        IQueryBuilder<T> WithSingleMapper<T>(Func<IRow, T> mapper, T @default = default);
 
         /// <summary>
         /// Sets up the query to execute for a scalar result with an optioanl default
         /// if null is returned.
         /// </summary>
         /// <param name="default">the default value.</param>
-        IQueryBuilder<T> WithScalar<T>(T @default = default(T));
+        IQueryBuilder<T> WithScalar<T>(T @default = default);
 
         /// <summary>
         /// Specifies a command timeout for the query

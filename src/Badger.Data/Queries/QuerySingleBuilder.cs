@@ -5,19 +5,19 @@ namespace Badger.Data.Queries
 {
     internal sealed class QuerySingleBuilder<T> : IQueryBuilder<T>
     {
-        private readonly DbCommand command;
-        private readonly Func<IRow, T> mapper;
-        private readonly T @default;
+        private readonly DbCommand _command;
+        private readonly Func<IRow, T> _mapper;
+        private readonly T _default;
 
         public QuerySingleBuilder(DbCommand command, Func<IRow, T> mapper, T @default)
         {
-            this.command = command;
-            this.mapper = mapper;
-            this.@default = @default;
+            this._command = command;
+            this._mapper = mapper;
+            this._default = @default;
         }
         public IPreparedQuery<T> Build()
         {
-            return new PreparedSingleQuery<T>(this.command, this.mapper, this.@default);
+            return new PreparedSingleQuery<T>(_command, _mapper, _default);
         }
     }
 

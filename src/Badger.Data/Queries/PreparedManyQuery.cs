@@ -8,23 +8,23 @@ namespace Badger.Data.Queries
 {
     internal sealed class PreparedManyQuery<TResult> : IPreparedQuery<IEnumerable<TResult>>
     {
-        private readonly DbCommand command;
-        private readonly Func<IRow, TResult> mapper;
+        private readonly DbCommand _command;
+        private readonly Func<IRow, TResult> _mapper;
 
         public PreparedManyQuery(DbCommand command, Func<IRow, TResult> mapper)
         {
-            this.command = command;
-            this.mapper = mapper;
+            this._command = command;
+            this._mapper = mapper;
         }
 
         public IEnumerable<TResult> Execute()
         {
-            using (var reader = this.command.ExecuteReader())
+            using (var reader = _command.ExecuteReader())
             {
                 var row = new Row(reader);
                 while (reader.Read())
                 {
-                    yield return mapper.Invoke(row);
+                    yield return _mapper.Invoke(row);
                 }
             }
         }
@@ -33,12 +33,12 @@ namespace Badger.Data.Queries
         {
             var result = new List<TResult>();
             
-            using (var reader = await this.command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+            using (var reader = await _command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
             {
                 var row = new Row(reader);
                 while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    result.Add(mapper.Invoke(row));
+                    result.Add(_mapper.Invoke(row));
                 }
             }
 

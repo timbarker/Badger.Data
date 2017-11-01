@@ -1,3 +1,4 @@
+
 namespace Badger.Data.Tests.Sqlite
 {
     public class SqliteCommandTest : CommandTest<SqliteTestFixture>

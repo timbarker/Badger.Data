@@ -7,30 +7,34 @@ namespace Badger.Data.Tests.Postgres
 {
     public class PostgresTimeoutTest : IClassFixture<PostgresTestFixture>
     {
-        readonly SessionFactory sessionFactory;
+        private readonly ISessionFactory _sessionFactory;
 
         public PostgresTimeoutTest(PostgresTestFixture fixture)
         {
-            sessionFactory = new SessionFactory(fixture.ProviderFactory, fixture.ConnectionString);
+            _sessionFactory = SessionFactory.With(config =>
+            {
+                config.WithConnectionString(fixture.ConnectionString)
+                    .WithProviderFactory(fixture.ProviderFactory);
+            });
         }
 
         class TimeoutQuery : IQuery<int>
         {
-            readonly int sleep;
-            readonly int timeout;
+            readonly int _sleep;
+            readonly int _timeout;
 
             public TimeoutQuery(int sleep, int timeout)
             {
-                this.sleep = sleep;
-                this.timeout = timeout;
+                this._sleep = sleep;
+                this._timeout = timeout;
             }
 
             public IPreparedQuery<int> Prepare(IQueryBuilder queryBuilder)
             {
                 return queryBuilder
                     .WithSql("select pg_sleep(:sleep)")
-                    .WithTimeout(TimeSpan.FromSeconds(timeout))
-                    .WithParameter("sleep", sleep)
+                    .WithTimeout(TimeSpan.FromSeconds(_timeout))
+                    .WithParameter("sleep", _sleep)
                     .WithScalar(42)
                     .Build();
             }
@@ -41,7 +45,7 @@ namespace Badger.Data.Tests.Postgres
         {
             Assert.Throws<NpgsqlException>(() =>
             {
-                using (var session = this.sessionFactory.CreateQuerySession())
+                using (var session = _sessionFactory.CreateQuerySession())
                 {
                     session.Execute(new TimeoutQuery(5, 1));
                 }
@@ -51,7 +55,7 @@ namespace Badger.Data.Tests.Postgres
         [Fact]
         public void DoesNotThrowWhenQueryDoesntExceedTimeout()
         {
-            using (var session = this.sessionFactory.CreateQuerySession())
+            using (var session = _sessionFactory.CreateQuerySession())
             {
                 var result = session.Execute(new TimeoutQuery(1, 5));
                 result.ShouldBe(42);
@@ -74,7 +78,7 @@ namespace Badger.Data.Tests.Postgres
         {
             Assert.Throws<NpgsqlException>(() =>
             {
-                using (var session = this.sessionFactory.CreateCommandSession())
+                using (var session = _sessionFactory.CreateCommandSession())
                 {
                     session.Execute(new TimeoutCommand());
                 }

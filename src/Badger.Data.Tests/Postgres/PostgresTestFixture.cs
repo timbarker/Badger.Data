@@ -1,13 +1,12 @@
 using Dapper;
-using System.IO;
 using Npgsql;
 
 namespace Badger.Data.Tests.Postgres
 {
     public class PostgresTestFixture : DbTestFixture
     {
-        private string baseConnectionString = "Host=localhost;Username=postgres;Password=password;Pooling=false";
-        public override string ConnectionString => $"{baseConnectionString};Database={this.TestDatabase}";
+        private string _baseConnectionString = "Host=localhost;Username=postgres;Password=password;Pooling=false";
+        public override string ConnectionString => $"{_baseConnectionString};Database={TestDatabase}";
 
         public PostgresTestFixture() 
             : base (NpgsqlFactory.Instance)
@@ -17,7 +16,7 @@ namespace Badger.Data.Tests.Postgres
 
         protected override void CreateTestTables()
         {
-            this.Connection.Execute(
+            Connection.Execute(
                 @"create table people(
                     id bigserial primary key, 
                     name varchar(100) not null, 
@@ -28,17 +27,17 @@ namespace Badger.Data.Tests.Postgres
 
         protected override void CreateTestDatabase()
         {
-            using (var conn = new NpgsqlConnection(this.baseConnectionString))
+            using (var conn = new NpgsqlConnection(_baseConnectionString))
             {
-                conn.Execute($"create database {this.TestDatabase}");
+                conn.Execute($"create database {TestDatabase}");
             }
         }
         
         protected override void DestroyTestDatabase()
         {
-            using (var conn = new NpgsqlConnection(this.baseConnectionString))
+            using (var conn = new NpgsqlConnection(_baseConnectionString))
             {
-                conn.Execute($"drop database {this.TestDatabase}");
+                conn.Execute($"drop database {TestDatabase}");
             }
         }
     }
