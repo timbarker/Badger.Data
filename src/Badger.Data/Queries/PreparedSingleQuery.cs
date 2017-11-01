@@ -7,38 +7,38 @@ namespace Badger.Data.Queries
 {
     internal sealed class PreparedSingleQuery<TResult> : IPreparedQuery<TResult>
     {
-        private readonly DbCommand command;
-        private readonly Func<IRow, TResult> mapper;
-        private readonly TResult @default;
+        private readonly DbCommand _command;
+        private readonly Func<IRow, TResult> _mapper;
+        private readonly TResult _default;
 
         public PreparedSingleQuery(DbCommand command, Func<IRow, TResult> mapper, TResult @default)
         {
-            this.command = command;
-            this.mapper = mapper;
-            this.@default = @default;
+            this._command = command;
+            this._mapper = mapper;
+            this._default = @default;
         }
 
         public TResult Execute()
         {
-            using (var reader = this.command.ExecuteReader())
+            using (var reader = _command.ExecuteReader())
             {
                 var row = new Row(reader);
                 if (reader.Read())
-                    return mapper.Invoke(row);
+                    return _mapper.Invoke(row);
                 
-                return this.@default;
+                return _default;
             }
         }
 
         public async Task<TResult> ExecuteAsync(CancellationToken cancellationToken)
         {
-            using (var reader = await this.command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+            using (var reader = await _command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
             {
                 var row = new Row(reader);
                 if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                    return mapper.Invoke(row);
+                    return _mapper.Invoke(row);
 
-                return this.@default;
+                return _default;
             }
         }
     }

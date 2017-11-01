@@ -1,7 +1,7 @@
-using Dapper;
 using System;
 using System.Data.Common;
 using Badger.Data.Tests.Queries;
+using Dapper;
 
 namespace Badger.Data.Tests
 {
@@ -30,9 +30,9 @@ namespace Badger.Data.Tests
         {
             QueryFactory = queryFactory ?? new QueryFactory();
 
-            this.TestDatabase = "badgerdata" + Guid.NewGuid().ToString("N");
+            TestDatabase = "badgerdata" + Guid.NewGuid().ToString("N");
 
-            this.ProviderFactory = providerFactory;
+            ProviderFactory = providerFactory;
         }
 
         protected void InitTestDatabase()
@@ -47,23 +47,30 @@ namespace Badger.Data.Tests
 
         private void OpenTestConnection()
         {
-            this.Connection = this.ProviderFactory.CreateConnection();
-            this.Connection.ConnectionString = this.ConnectionString;
-            this.Connection.Open();
+            Connection = ProviderFactory.CreateConnection();
+            Connection.ConnectionString = ConnectionString;
+            Connection.Open();
         }
         protected abstract void CreateTestTables();
+
+        public virtual ISessionFactory CreateSessionFactory()
+        {
+            return SessionFactory.With(config =>
+                config.WithConnectionString(ConnectionString)
+                      .WithProviderFactory(ProviderFactory));
+        }
 
         protected void InsertTestData()
         {
             var insertSql = @"insert into people (name, dob, height, address) 
                               values (@Name, @Dob, @Height, @Address)";
-            this.Connection.Execute(insertSql, TestPerson1);
+            Connection.Execute(insertSql, TestPerson1);
 
-            this.Connection.Execute(insertSql, TestPerson2);
+            Connection.Execute(insertSql, TestPerson2);
         }
         public virtual void Dispose()
         {
-            this.Connection.Dispose();
+            Connection.Dispose();
             DestroyTestDatabase();
         }
 

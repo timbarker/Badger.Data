@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using Badger.Data.Sessions;
@@ -6,29 +7,37 @@ namespace Badger.Data
 {
     public class SessionFactory : ISessionFactory
     {
-        private readonly DbProviderFactory providerFactory;
-        private readonly string connectionString;
+        private readonly Config _config;
+        private readonly ParameterFactory _parameterFactory;
 
-        public SessionFactory(DbProviderFactory providerFactory, string connectionString)
+        public static ISessionFactory With(Action<Config> configBuilder)
         {
-            this.providerFactory = providerFactory;
-            this.connectionString = connectionString;
+            var config = new Config();
+            configBuilder.Invoke(config);
+            var sessionFactory = new SessionFactory(config);
+            return sessionFactory;
+        }
+
+        private SessionFactory(Config config)
+        {
+            _config = config;
+            _parameterFactory = new ParameterFactory(_config.ProviderFactory, _config.ParameterHandlers);
         }
 
         public ICommandSession CreateCommandSession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
-            return new CommandSession(CreateConnection(), isolationLevel);
+            return new CommandSession(CreateConnection(), _parameterFactory, isolationLevel);
         }
 
         public IQuerySession CreateQuerySession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
         {
-            return new QuerySession(CreateConnection(), isolationLevel);
+            return new QuerySession(CreateConnection(), _parameterFactory, isolationLevel);
         }
 
         private DbConnection CreateConnection()
         {
-            var connection = this.providerFactory.CreateConnection();
-            connection.ConnectionString = this.connectionString;
+            var connection = _config.ProviderFactory.CreateConnection();
+            connection.ConnectionString = _config.ConnectionString;
             return connection;
         }
     }

@@ -1,50 +1,43 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 
 namespace Badger.Data
 {
     internal abstract class Builder<TBuilder> 
       where TBuilder : class
     {
-        protected readonly DbCommand command;
+        protected readonly DbCommand Command;
+        private readonly ParameterFactory _parameterFactory;
 
-        public Builder(DbCommand command)
+        public Builder(DbCommand command, ParameterFactory parameterFactory)
         {
-            this.command = command;
-        }
-
-        protected TBuilder AddParameter<T>(string name, T value, int? size = null)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException("Paramter name must not be null or empty", nameof(name));
-
-            var parameter = this.command.CreateParameter();
-            parameter.ParameterName = name;
-            parameter.Value = value;
-
-            if (size.HasValue)
-                parameter.Size = size.Value;
-            else if (typeof(T) == typeof(string))
-                parameter.Size = (value as string).Length;
-
-            this.command.Parameters.Add(parameter);
-
-            return this as TBuilder;
+            Command = command;
+            _parameterFactory = parameterFactory;
         }
 
         public TBuilder WithParameter(string name, string value, int length)
         {
-           return AddParameter(name, value, length);
+            Command.Parameters.Add(_parameterFactory.Create(name, value, length));
+            return this as TBuilder;
         }
 
-        public TBuilder WithParameter<T>(string name, T value) 
+        public TBuilder WithParameter(string name, object value) 
         {
-            return AddParameter(name, value);
+            Command.Parameters.Add(_parameterFactory.Create(name, value));
+            return this as TBuilder;
+        }
+
+        public TBuilder WithTableParameter<T>(string name, IEnumerable<T> value)
+        {
+            Command.Parameters.Add(_parameterFactory.Create(name, value));
+            return this as TBuilder;
         }
 
         public TBuilder WithTimeout(TimeSpan timeout)
         {
-            this.command.CommandTimeout = (int)timeout.TotalSeconds;
+            Command.CommandTimeout = (int)timeout.TotalSeconds;
             return this as TBuilder;
         }
 
@@ -53,7 +46,7 @@ namespace Badger.Data
             if (string.IsNullOrEmpty(sql)) 
                 throw new ArgumentException("SQL must not be null or empty", nameof(sql));
             
-            this.command.CommandText = sql;
+            Command.CommandText = sql;
             return this as TBuilder;
         }
     }

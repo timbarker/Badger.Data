@@ -6,7 +6,7 @@ namespace Badger.Data.Tests.Sqlite
 {
     public class SqliteTestFixture : DbTestFixture
     {
-        public override string ConnectionString => $"Data Source={this.TestDatabase}";
+        public override string ConnectionString => $"Data Source={TestDatabase}";
 
         public SqliteTestFixture()
             : base (SqliteFactory.Instance)
@@ -16,7 +16,7 @@ namespace Badger.Data.Tests.Sqlite
 
         protected override void CreateTestTables()
         {
-            this.Connection.Execute(
+            Connection.Execute(
                 @"create table people(
                     id integer primary key autoincrement, 
                     name text not null, 
@@ -27,7 +27,7 @@ namespace Badger.Data.Tests.Sqlite
 
         protected override void DestroyTestDatabase()
         {
-            File.Delete(this.TestDatabase);
+            File.Delete(TestDatabase);
         }
     }
 }

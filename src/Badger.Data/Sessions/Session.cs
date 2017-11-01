@@ -8,50 +8,50 @@ namespace Badger.Data.Sessions
 {
     internal abstract class Session : IDisposable
     {
-        private readonly DbConnection connection;
-        private readonly IsolationLevel isolationLevel;
-        private DbTransaction transaction;
+        private readonly DbConnection _connection;
+        private readonly IsolationLevel _isolationLevel;
+        private DbTransaction _transaction;
 
         protected Session(DbConnection connection, IsolationLevel isolationLevel)
         {
-            this.connection = connection;
-            this.isolationLevel = isolationLevel;
+            this._connection = connection;
+            this._isolationLevel = isolationLevel;
         }
 
         public void Dispose()
         {
-            this.transaction?.Dispose();
-            this.connection.Dispose();
+            _transaction?.Dispose();
+            _connection.Dispose();
         }
 
         public void Commit()
         {
-            this.transaction?.Commit();
+            _transaction?.Commit();
         }
 
         protected DbCommand CreateCommand()
         {
-            if (this.connection.State != ConnectionState.Open)
+            if (_connection.State != ConnectionState.Open)
             {
-                this.connection.Open();
-                this.transaction = this.connection.BeginTransaction(this.isolationLevel);
+                _connection.Open();
+                _transaction = _connection.BeginTransaction(_isolationLevel);
             }
 
-            var command = this.connection.CreateCommand();
-            command.Transaction = this.transaction;
+            var command = _connection.CreateCommand();
+            command.Transaction = _transaction;
             return command;
         }
 
         protected async Task<DbCommand> CreateCommandAsync(CancellationToken cancellationToken)
         {
-            if (this.connection.State != ConnectionState.Open)
+            if (_connection.State != ConnectionState.Open)
             {
-                await this.connection.OpenAsync(cancellationToken);
-                this.transaction = this.connection.BeginTransaction(this.isolationLevel);
+                await _connection.OpenAsync(cancellationToken);
+                _transaction = _connection.BeginTransaction(_isolationLevel);
             }
 
-            var command = this.connection.CreateCommand();
-            command.Transaction = this.transaction;
+            var command = _connection.CreateCommand();
+            command.Transaction = _transaction;
             return command;
         }
     }

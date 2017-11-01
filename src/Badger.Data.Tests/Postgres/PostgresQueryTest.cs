@@ -24,7 +24,7 @@ namespace Badger.Data.Tests.Postgres
         [Fact]
         public void QueryWithArrayParameterTest()
         {
-            using (var session = this.sessionFactory.CreateQuerySession())
+            using (var session = SessionFactory.CreateQuerySession())
             {
                 session.Execute(new QueryWithArrayParameter()).ShouldBe(1);
             }

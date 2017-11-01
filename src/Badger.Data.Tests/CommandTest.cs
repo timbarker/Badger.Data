@@ -1,42 +1,39 @@
+using System;
+using System.Threading.Tasks;
 using Dapper;
 using Shouldly;
-using System;
-using Microsoft.Data.Sqlite;
 using Xunit;
-using Xunit.Abstractions;
-using System.Threading.Tasks;
 
 namespace Badger.Data.Tests
 {
     public abstract class CommandTest<T> : IClassFixture<T> where T : DbTestFixture
     {
-        private readonly T fixture;
-        private readonly ISessionFactory sessionFactory;
+        private readonly T _fixture;
+        private readonly ISessionFactory _sessionFactory;
 
         protected CommandTest(T fixture)
         {
-            this.fixture = fixture;
-
-            this.sessionFactory = new SessionFactory(fixture.ProviderFactory, this.fixture.ConnectionString);
+            this._fixture = fixture;
+            _sessionFactory = fixture.CreateSessionFactory();
         }
 
         class InsertPersonCommand : ICommand
         {
-            private readonly string name;
-            private readonly DateTime dob;
+            private readonly string _name;
+            private readonly DateTime _dob;
 
             public InsertPersonCommand(string name, DateTime dob)
             {
-                this.name = name;
-                this.dob = dob;
+                this._name = name;
+                this._dob = dob;
             }
             
             public IPreparedCommand Prepare(ICommandBuilder builder)
             {
                 return builder
                     .WithSql("insert into people(name, dob) values (@name, @dob)")
-                    .WithParameter("name", this.name)
-                    .WithParameter("dob", this.dob)
+                    .WithParameter("name", _name)
+                    .WithParameter("dob", _dob)
                     .Build();
             }
         }
@@ -47,13 +44,13 @@ namespace Badger.Data.Tests
             var name = Guid.NewGuid().ToString();
             var dob = new DateTime(1990, 5, 20);
 
-            using (var session = this.sessionFactory.CreateCommandSession())
+            using (var session = _sessionFactory.CreateCommandSession())
             {
                 session.Execute(new InsertPersonCommand(name, dob)).ShouldBe(1);
                 session.Commit();
             }
         
-            var result = this.fixture.Connection.QuerySingle<Person>(
+            var result = _fixture.Connection.QuerySingle<Person>(
                 "select name, dob from people where name = @name", new { name });
 
             result.Dob.ShouldBe(dob);
@@ -65,13 +62,13 @@ namespace Badger.Data.Tests
             var name = Guid.NewGuid().ToString();
             var dob = new DateTime(1990, 5, 20);
 
-            using (var session = this.sessionFactory.CreateCommandSession())
+            using (var session = _sessionFactory.CreateCommandSession())
             {
                 (await session.ExecuteAsync(new InsertPersonCommand(name, dob))).ShouldBe(1);
                 session.Commit();
             }
         
-            var result = this.fixture.Connection.QuerySingle<Person>(
+            var result = _fixture.Connection.QuerySingle<Person>(
                 "select name, dob from people where name = @name", new { name });
 
             result.Dob.ShouldBe(dob);
@@ -83,12 +80,12 @@ namespace Badger.Data.Tests
             var name = Guid.NewGuid().ToString();
             var dob = new DateTime(1990, 5, 20);
 
-            using (var session = this.sessionFactory.CreateCommandSession())
+            using (var session = _sessionFactory.CreateCommandSession())
             {
                 session.Execute(new InsertPersonCommand(name, dob)).ShouldBe(1);
             }
         
-            var result = this.fixture.Connection.QuerySingleOrDefault<Person>(
+            var result = _fixture.Connection.QuerySingleOrDefault<Person>(
                 "select name, dob from people where name = @name", new { name });
 
             result.ShouldBeNull();
@@ -100,12 +97,12 @@ namespace Badger.Data.Tests
             var name = Guid.NewGuid().ToString();
             var dob = new DateTime(1990, 5, 20);
 
-            using (var session = this.sessionFactory.CreateCommandSession())
+            using (var session = _sessionFactory.CreateCommandSession())
             {
                 (await session.ExecuteAsync(new InsertPersonCommand(name, dob))).ShouldBe(1);
             }
         
-            var result = this.fixture.Connection.QuerySingleOrDefault<Person>(
+            var result = _fixture.Connection.QuerySingleOrDefault<Person>(
                 "select name, dob from people where name = @name", new { name });
 
             result.ShouldBeNull();
@@ -114,13 +111,13 @@ namespace Badger.Data.Tests
         [Fact]
         public void CommandSessionWithNoExecutionsDoesNotThrow()
         {
-            this.sessionFactory.CreateCommandSession().Dispose();
+            _sessionFactory.CreateCommandSession().Dispose();
         }
 
         [Fact]
         public void CommittedCommandSessionWithNoExecutionsDoesNotThrow()
         {
-            using (var session = this.sessionFactory.CreateCommandSession())
+            using (var session = _sessionFactory.CreateCommandSession())
             {
                 session.Commit();
             }

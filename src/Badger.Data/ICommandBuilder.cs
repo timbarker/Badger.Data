@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Badger.Data
 {
@@ -18,7 +19,9 @@ namespace Badger.Data
         /// </summary>
         /// <param name="name">the name of the command parameter.</param>
         /// <param name="value">the parameter value.</param>
-        ICommandBuilder WithParameter<T>(string name, T value);
+        ICommandBuilder WithParameter(string name, object value);
+
+        ICommandBuilder WithTableParameter<T>(string name, IEnumerable<T> value);
 
         /// <summary>
         /// Sets a string command parameter with a length.
