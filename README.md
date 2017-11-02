@@ -34,7 +34,12 @@ class Program
 {
     static async Task Main() 
     {
-        var sessionFactory = new SessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
+        var sessionFactory = new SessionFactory.With(config =>
+        {
+            config
+                .WithProviderFactory(SqliteFactory.Instance)
+                .WithConnectionString("Data Source='database.db'");
+        });
 
         using (var session = sessionFactory.CreateCommandSession())
         {
@@ -76,7 +81,12 @@ class Program
 {
     static async Task Main() 
     {
-        var sessionFactory = new SessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
+        var sessionFactory = new SessionFactory.With(config =>
+        {
+            config
+                .WithProviderFactory(SqliteFactory.Instance)
+                .WithConnectionString("Data Source='database.db'");
+        });
 
         using (var session = sessionFactory.CreateQuerySession())
         {
@@ -120,7 +130,12 @@ class Program
 {
     static async Task Main() 
     {
-        var sessionFactory = new SessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
+        var sessionFactory = new SessionFactory.With(config =>
+        {
+            config
+                .WithProviderFactory(SqliteFactory.Instance)
+                .WithConnectionString("Data Source='database.db'");
+        });
 
         using (var session = sessionFactory.CreateQuerySession())
         {
@@ -149,7 +164,12 @@ class Program
 {
     static async Task Main() 
     {
-        var sessionFactory = new SessionFactory(SqliteFactory.Instance, "Data Source='database.db'");
+        var sessionFactory = new SessionFactory.With(config =>
+        {
+            config
+                .WithProviderFactory(SqliteFactory.Instance)
+                .WithConnectionString("Data Source='database.db'");
+        });
 
         using (var session = sessionFactory.CreateQuerySession())
         {
@@ -160,4 +180,90 @@ class Program
     }
 }
 
+```
+
+### Configuring a SessionFactory
+```csharp
+class Program
+{
+    static void Main()
+    {
+        var sessionFactory = SessionFactory.With(config =>
+        {
+            config
+                .WithProviderFactory(SqlClientFactory.Instance)
+                .WithConnectionString("Data Source='database.db'")
+                .WithTableParameterHandler<long>((value, parameter) =>
+                {
+                    /* Database engines such as MSSQL Server do not
+                       support array types natively, therefore one can
+                       declare a custom table type and map your array onto it.
+                       The code below, allows an IEnumerable<long> to be mapped to a
+                       custom table `t_BigIntArray` with a column `id` 
+                       of `SqlDbType.BigInt`
+                    */
+
+                    var sqlParameter = (SqlParameter)parameter;
+
+                    SqlMetaData[] tvpDefinition = { new SqlMetaData("id", SqlDbType.BigInt) };
+                    sqlParameter.Value = value.Select(i =>
+                    {
+                        var sqlDataRecord = new SqlDataRecord(tvpDefinition);
+                        sqlDataRecord.SetInt64(0, i);
+                        return sqlDataRecord;
+                    }).ToList();
+
+                    sqlParameter.SqlDbType = SqlDbType.Structured;
+                    sqlParameter.TypeName = "t_BigIntArray";
+                })
+                .WithParameterHandler<Person>((value, parameter) =>
+                {
+                    /* Similarly, one can define how custom types are mapped
+                       into database parameters. The example below maps a `Person`
+                       into a DbType.String by taking the `Name` property and assigning 
+                       to the parameter.
+                    */
+
+                    parameter.Value = value.Name;
+                    parameter.DbType = DbType.String;
+                });
+        });
+    }
+}
+```
+
+### Query by table parameter
+```csharp
+class GetPeopleIdsQuery : IQuery<IEnumerable<long>>
+{
+    private readonly long[] _ids;
+
+    public GetPeopleIdsQuery(params long[] ids)
+    {
+        _ids = ids;
+    }
+
+    public IPreparedQuery<IEnumerable<string>> Prepare(IQueryBuilder queryBuilder)
+    {
+        return queryBuilder
+            .WithSql("select p.name from people p inner join @ids i on i.id = p.id")
+            .WithTableParameter("@ids", _ids)
+            .WithMapper(r => r.Get<string>("id"))
+            .Build();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        using (var session = sessionFactory.CreateQuerySession())
+        {
+            var peopleIds = new[] {1L, 2L};
+            var names = session.Execute(new GetPeopleIdsQuery(peopleIds));
+
+            Console.WriteLine($"The people are {string.Join(", ", names)}");
+        }
+    }
+}
 ```
