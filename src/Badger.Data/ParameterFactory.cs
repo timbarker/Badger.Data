@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 
@@ -28,6 +29,18 @@ namespace Badger.Data
                 handler.Invoke(value, parameter);
             else
                 DefaultParameterHandler(value, parameter, size);
+
+            return parameter;
+        }
+
+        public DbParameter CreateOutputParameter(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Paramter name must not be null or empty", nameof(name));
+
+            var parameter = _dbProviderFactory.CreateParameter();
+            parameter.ParameterName = name;
+            parameter.Direction = ParameterDirection.Output;
 
             return parameter;
         }

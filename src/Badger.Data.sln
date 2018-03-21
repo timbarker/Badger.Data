@@ -1,10 +1,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Data", "Badger.Data\Badger.Data.csproj", "{DC00C819-6595-4663-94F7-5CC4D6860FA0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Data.Tests", "Badger.Data.Tests\Badger.Data.Tests.csproj", "{90A79412-381D-40AC-824F-34F5C759D71E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger.Data.Postgres", "Badger.Data.Postgres\Badger.Data.Postgres.csproj", "{88CF7C47-158D-4F75-8217-EB1AD566EFC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +42,18 @@ Global
 		{90A79412-381D-40AC-824F-34F5C759D71E}.Release|x64.Build.0 = Release|Any CPU
 		{90A79412-381D-40AC-824F-34F5C759D71E}.Release|x86.ActiveCfg = Release|Any CPU
 		{90A79412-381D-40AC-824F-34F5C759D71E}.Release|x86.Build.0 = Release|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Debug|x64.Build.0 = Debug|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Debug|x86.Build.0 = Debug|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Release|x64.ActiveCfg = Release|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Release|x64.Build.0 = Release|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Release|x86.ActiveCfg = Release|Any CPU
+		{88CF7C47-158D-4F75-8217-EB1AD566EFC6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

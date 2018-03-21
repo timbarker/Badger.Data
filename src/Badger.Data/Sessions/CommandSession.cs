@@ -6,7 +6,7 @@ using Badger.Data.Commands;
 
 namespace Badger.Data.Sessions
 {
-    internal sealed class CommandSession : Session, ICommandSession
+    internal class CommandSession : Session, ICommandSession
     {
         private readonly ParameterFactory _parameterFactory;
 
