@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Badger.Data
 {
     /// <summary>
-    /// Builder to create a PreparedCommand
+    /// Builder to create a PreparedCommand.
     /// </summary>
     public interface ICommandBuilder
     {
@@ -32,7 +32,7 @@ namespace Badger.Data
         ICommandBuilder WithParameter(string name, string value, int length);
 
         /// <summary>
-        /// Specifies a command timeout for the query
+        /// Specifies a command timeout for the query.
         /// </summary>
         /// <param name="timeout">the desired timeout.</param>
         /// <returns></returns>

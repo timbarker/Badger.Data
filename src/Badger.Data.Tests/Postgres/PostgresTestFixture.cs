@@ -1,3 +1,4 @@
+using Badger.Data.Postgres;
 using Dapper;
 using Npgsql;
 
@@ -12,6 +13,13 @@ namespace Badger.Data.Tests.Postgres
             : base (NpgsqlFactory.Instance)
         {
             InitTestDatabase();
+        }
+
+        public IPostgresSessionFactory CreatePostgresSessionFactory()
+        {
+            return PostgresSessionFactory.With(config =>
+                config.WithConnectionString(ConnectionString)
+                    .WithProviderFactory(ProviderFactory));
         }
 
         protected override void CreateTestTables()

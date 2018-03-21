@@ -13,6 +13,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Badger.Data.Postgres\Badger.Data.Postgres.csproj" />
     <ProjectReference Include="..\Badger.Data\Badger.Data.csproj" />
   </ItemGroup>
 </Project>

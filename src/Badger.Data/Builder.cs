@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 
 namespace Badger.Data
 {
@@ -20,6 +19,12 @@ namespace Badger.Data
         public TBuilder WithParameter(string name, string value, int length)
         {
             Command.Parameters.Add(_parameterFactory.Create(name, value, length));
+            return this as TBuilder;
+        }
+
+        public TBuilder WithOutputParameter(string name)
+        {
+            Command.Parameters.Add(_parameterFactory.CreateOutputParameter(name));
             return this as TBuilder;
         }
 

@@ -13,5 +13,10 @@ namespace Badger.Data.Commands
         {
             return new PreparedCommand(Command);
         }
+
+        public ICommandBuilder AsInsert(string identifierName)
+        {
+            return WithOutputParameter(identifierName);
+        }
     }
 }
