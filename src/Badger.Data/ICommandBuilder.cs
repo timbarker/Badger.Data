@@ -19,7 +19,7 @@ namespace Badger.Data
         /// </summary>
         /// <param name="name">the name of the command parameter.</param>
         /// <param name="value">the parameter value.</param>
-        ICommandBuilder WithParameter(string name, object value);
+        ICommandBuilder WithParameter<T>(string name, T value);
 
         ICommandBuilder WithTableParameter<T>(string name, IEnumerable<T> value);
 

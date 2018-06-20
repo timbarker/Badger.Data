@@ -23,7 +23,7 @@ namespace Badger.Data
             return this as TBuilder;
         }
 
-        public TBuilder WithParameter(string name, object value) 
+        public TBuilder WithParameter<T>(string name, T value) 
         {
             Command.Parameters.Add(_parameterFactory.Create(name, value));
             return this as TBuilder;

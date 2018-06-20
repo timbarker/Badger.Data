@@ -31,9 +31,11 @@ namespace Badger.Data.Tests
             public IPreparedCommand Prepare(ICommandBuilder builder)
             {
                 return builder
-                    .WithSql("insert into people(name, dob) values (@name, @dob)")
+                    .WithSql("insert into people(name, dob, height, address) values (@name, @dob, @height, @address)")
                     .WithParameter("name", _name)
                     .WithParameter("dob", _dob)
+                    .WithParameter<int?>("height", null)
+                    .WithParameter<string>("address", null)
                     .Build();
             }
         }

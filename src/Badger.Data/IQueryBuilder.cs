@@ -19,7 +19,7 @@ namespace Badger.Data
         /// </summary>
         /// <param name="name">the name of the query parameter.</param>
         /// <param name="value">the parameter value.</param>
-        IQueryBuilder WithParameter(string name, object value);
+        IQueryBuilder WithParameter<T>(string name, T value);
 
 
         IQueryBuilder WithTableParameter<T>(string name, IEnumerable<T> value);

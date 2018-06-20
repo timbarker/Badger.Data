@@ -16,7 +16,7 @@ namespace Badger.Data
             _parameterHandlers = parameterHandlers.ToDictionary(h => h.Type, h => h.Handle);
         }
 
-        public DbParameter Create(string name, object value, int? size = null)
+        public DbParameter Create<T>(string name, T value, int? size = null)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Paramter name must not be null or empty", nameof(name));
@@ -24,7 +24,7 @@ namespace Badger.Data
             var parameter = _dbProviderFactory.CreateParameter();
             parameter.ParameterName = name;
 
-            if (_parameterHandlers.TryGetValue(value.GetType(), out var handler))
+            if (_parameterHandlers.TryGetValue(typeof(T), out var handler))
                 handler.Invoke(value, parameter);
             else
                 DefaultParameterHandler(value, parameter, size);
@@ -50,7 +50,7 @@ namespace Badger.Data
 
         private static void DefaultParameterHandler(object value, DbParameter parameter, int? size = null)
         {
-            parameter.Value = value;
+            parameter.Value = value ?? DBNull.Value;
 
             if (size.HasValue)
                 parameter.Size = size.Value;
