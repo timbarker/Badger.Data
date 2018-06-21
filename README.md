@@ -1,6 +1,8 @@
 # Badger.Data
 Simple data access for .net
 
+![Badger badger badger](https://media.giphy.com/media/zXHZWGLWNQkrS/giphy.gif)
+
 [![Build Status](https://travis-ci.org/timbarker/Badger.Data.svg?branch=master)](https://travis-ci.org/timbarker/Badger.Data)
 [![Nuget Package](https://img.shields.io/nuget/v/Badger.Data.svg?style=flat)](https://www.nuget.org/packages/Badger.Data/)
 
