@@ -22,6 +22,21 @@ namespace Badger.Data
         IQueryBuilder WithParameter<T>(string name, T value);
 
 
+        /// <summary>
+        /// Sets a string command parameter with a length.
+        /// </summary>
+        /// <param name="name">the name of the query parameter.</param>
+        /// <param name="value">the parameter value.</param>
+        /// <param name="length">the max length of the string.</param>
+        IQueryBuilder WithParameter(string name, string value, int length);
+
+        /// <summary>
+        /// Sets a table parameter.
+        /// </summary>
+        /// <typeparam name="T">the type of the query parameter.</typeparam>
+        /// <param name="name">the name of the query parameter.</param>
+        /// <param name="value">the value of the query parameter.</param>
+        /// <returns></returns>
         IQueryBuilder WithTableParameter<T>(string name, IEnumerable<T> value);
 
         /// <summary>
