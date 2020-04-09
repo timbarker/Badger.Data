@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.1</LangVersion>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>2.0.0</PackageVersion>
     <PackageId>Badger.Data</PackageId>
     <AssemblyName>Badger.Data</AssemblyName>
     <Description>Simple Database access</Description>
@@ -10,7 +10,4 @@
     <PackageProjectUrl>https://github.com/timbarker/Badger.Data</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/timbarker/Badger.Data/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
-  </ItemGroup>
 </Project>
