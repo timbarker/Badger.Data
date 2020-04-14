@@ -20,6 +20,6 @@ script:
 deploy:
   skip_cleanup: true
   provider: script
-  script: dotnet nuget push src/Badger.Data/nuget/Badger.Data.*.nupkg -k $NUGET_KEY -s https://nuget.org
+  script: dotnet nuget push nuget/Badger.Data.*.nupkg -k $NUGET_KEY -s https://nuget.org
   on:
     branch: master
