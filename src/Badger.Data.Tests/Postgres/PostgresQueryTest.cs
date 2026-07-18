@@ -1,34 +1,26 @@
 using Shouldly;
 using Xunit;
 
-namespace Badger.Data.Tests.Postgres
+namespace Badger.Data.Tests.Postgres;
+
+[Trait("Category", "Integration")]
+public class PostgresQueryTest(PostgresTestFixture fixture) : QueryTest<PostgresTestFixture>(fixture)
 {
-    [Trait("Category", "Integration")]
-    public class PostgresQueryTest : QueryTest<PostgresTestFixture>
+    class QueryWithArrayParameter : IQuery<long>
     {
-        public PostgresQueryTest(PostgresTestFixture fixture)
-            : base(fixture)
+        public IPreparedQuery<long> Prepare(IQueryBuilder queryBuilder)
         {
+            return queryBuilder.WithSql("select count(*) from people where name = any(@names)")
+                               .WithParameter("names", new[] { "Bill" })
+                               .WithScalar<long>()
+                               .Build();
         }
+    }
 
-        class QueryWithArrayParameter : IQuery<long>
-        {
-            public IPreparedQuery<long> Prepare(IQueryBuilder queryBuilder)
-            {
-                return queryBuilder.WithSql("select count(*) from people where name = any(@names)")
-                                   .WithParameter("names", new[] { "Bill" })
-                                   .WithScalar<long>()
-                                   .Build();
-            }
-        }
-
-        [Fact]
-        public void QueryWithArrayParameterTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                session.Execute(new QueryWithArrayParameter()).ShouldBe(1);
-            }
-        }
+    [Fact]
+    public void QueryWithArrayParameterTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        session.Execute(new QueryWithArrayParameter()).ShouldBe(1);
     }
 }

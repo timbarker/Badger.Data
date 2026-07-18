@@ -4,125 +4,106 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Badger.Data.Tests
+namespace Badger.Data.Tests;
+
+public abstract class CommandTest<T>(T fixture) : IClassFixture<T> where T : DbTestFixture
 {
-    public abstract class CommandTest<T> : IClassFixture<T> where T : DbTestFixture
+    private readonly ISessionFactory _sessionFactory = fixture.CreateSessionFactory();
+
+    class InsertPersonCommand(string name, DateTime dob) : ICommand
     {
-        private readonly T _fixture;
-        private readonly ISessionFactory _sessionFactory;
-
-        protected CommandTest(T fixture)
+        public IPreparedCommand Prepare(ICommandBuilder builder)
         {
-            this._fixture = fixture;
-            _sessionFactory = fixture.CreateSessionFactory();
+            return builder
+                .WithSql("insert into people(name, dob, height, address) values (@name, @dob, @height, @address)")
+                .WithParameter("name", name)
+                .WithParameter("dob", dob)
+                .WithParameter<int?>("height", null)
+                .WithParameter<string>("address", null)
+                .Build();
+        }
+    }
+
+    [Fact]
+    public void SessionInsertShouldAlterOneRow()
+    {
+        var name = Guid.NewGuid().ToString();
+        var dob = new DateTime(1990, 5, 20);
+
+        using (var session = _sessionFactory.CreateCommandSession())
+        {
+            session.Execute(new InsertPersonCommand(name, dob)).ShouldBe(1);
+            session.Commit();
         }
 
-        class InsertPersonCommand : ICommand
+        var result = fixture.Connection.QuerySingle<Person>(
+            "select name, dob from people where name = @name", new { name });
+
+        result.Dob.ShouldBe(dob);
+    }
+
+    [Fact]
+    public async Task SessionInsertShouldAlterOneRowAsync()
+    {
+        var name = Guid.NewGuid().ToString();
+        var dob = new DateTime(1990, 5, 20);
+
+        using (var session = _sessionFactory.CreateCommandSession())
         {
-            private readonly string _name;
-            private readonly DateTime _dob;
-
-            public InsertPersonCommand(string name, DateTime dob)
-            {
-                this._name = name;
-                this._dob = dob;
-            }
-
-            public IPreparedCommand Prepare(ICommandBuilder builder)
-            {
-                return builder
-                    .WithSql("insert into people(name, dob, height, address) values (@name, @dob, @height, @address)")
-                    .WithParameter("name", _name)
-                    .WithParameter("dob", _dob)
-                    .WithParameter<int?>("height", null)
-                    .WithParameter<string>("address", null)
-                    .Build();
-            }
+            (await session.ExecuteAsync(new InsertPersonCommand(name, dob), TestContext.Current.CancellationToken)).ShouldBe(1);
+            session.Commit();
         }
 
-        [Fact]
-        public void SessionInsertShouldAlterOneRow()
+        var result = fixture.Connection.QuerySingle<Person>(
+            "select name, dob from people where name = @name", new { name });
+
+        result.Dob.ShouldBe(dob);
+    }
+
+    [Fact]
+    public void UncommitedTransactionSessionInsertShouldNotAlterAnyRows()
+    {
+        var name = Guid.NewGuid().ToString();
+        var dob = new DateTime(1990, 5, 20);
+
+        using (var session = _sessionFactory.CreateCommandSession())
         {
-            var name = Guid.NewGuid().ToString();
-            var dob = new DateTime(1990, 5, 20);
-
-            using (var session = _sessionFactory.CreateCommandSession())
-            {
-                session.Execute(new InsertPersonCommand(name, dob)).ShouldBe(1);
-                session.Commit();
-            }
-
-            var result = _fixture.Connection.QuerySingle<Person>(
-                "select name, dob from people where name = @name", new { name });
-
-            result.Dob.ShouldBe(dob);
+            session.Execute(new InsertPersonCommand(name, dob)).ShouldBe(1);
         }
 
-        [Fact]
-        public async Task SessionInsertShouldAlterOneRowAsync()
+        var result = fixture.Connection.QuerySingleOrDefault<Person>(
+            "select name, dob from people where name = @name", new { name });
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task UncommitedTransactionSessionInsertShouldNotAlterAnyRowsAsync()
+    {
+        var name = Guid.NewGuid().ToString();
+        var dob = new DateTime(1990, 5, 20);
+
+        using (var session = _sessionFactory.CreateCommandSession())
         {
-            var name = Guid.NewGuid().ToString();
-            var dob = new DateTime(1990, 5, 20);
-
-            using (var session = _sessionFactory.CreateCommandSession())
-            {
-                (await session.ExecuteAsync(new InsertPersonCommand(name, dob), TestContext.Current.CancellationToken)).ShouldBe(1);
-                session.Commit();
-            }
-
-            var result = _fixture.Connection.QuerySingle<Person>(
-                "select name, dob from people where name = @name", new { name });
-
-            result.Dob.ShouldBe(dob);
+            (await session.ExecuteAsync(new InsertPersonCommand(name, dob), TestContext.Current.CancellationToken)).ShouldBe(1);
         }
 
-        [Fact]
-        public void UncommitedTransactionSessionInsertShouldNotAlterAnyRows()
-        {
-            var name = Guid.NewGuid().ToString();
-            var dob = new DateTime(1990, 5, 20);
+        var result = fixture.Connection.QuerySingleOrDefault<Person>(
+            "select name, dob from people where name = @name", new { name });
 
-            using (var session = _sessionFactory.CreateCommandSession())
-            {
-                session.Execute(new InsertPersonCommand(name, dob)).ShouldBe(1);
-            }
+        result.ShouldBeNull();
+    }
 
-            var result = _fixture.Connection.QuerySingleOrDefault<Person>(
-                "select name, dob from people where name = @name", new { name });
+    [Fact]
+    public void CommandSessionWithNoExecutionsDoesNotThrow()
+    {
+        _sessionFactory.CreateCommandSession().Dispose();
+    }
 
-            result.ShouldBeNull();
-        }
-
-        [Fact]
-        public async Task UncommitedTransactionSessionInsertShouldNotAlterAnyRowsAsync()
-        {
-            var name = Guid.NewGuid().ToString();
-            var dob = new DateTime(1990, 5, 20);
-
-            using (var session = _sessionFactory.CreateCommandSession())
-            {
-                (await session.ExecuteAsync(new InsertPersonCommand(name, dob), TestContext.Current.CancellationToken)).ShouldBe(1);
-            }
-
-            var result = _fixture.Connection.QuerySingleOrDefault<Person>(
-                "select name, dob from people where name = @name", new { name });
-
-            result.ShouldBeNull();
-        }
-
-        [Fact]
-        public void CommandSessionWithNoExecutionsDoesNotThrow()
-        {
-            _sessionFactory.CreateCommandSession().Dispose();
-        }
-
-        [Fact]
-        public void CommittedCommandSessionWithNoExecutionsDoesNotThrow()
-        {
-            using (var session = _sessionFactory.CreateCommandSession())
-            {
-                session.Commit();
-            }
-        }
+    [Fact]
+    public void CommittedCommandSessionWithNoExecutionsDoesNotThrow()
+    {
+        using var session = _sessionFactory.CreateCommandSession();
+        session.Commit();
     }
 }

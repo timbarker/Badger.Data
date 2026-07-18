@@ -2,39 +2,38 @@ using Dapper;
 using Microsoft.Data.Sqlite;
 using System.IO;
 
-namespace Badger.Data.Tests.Sqlite
+namespace Badger.Data.Tests.Sqlite;
+
+public class SqliteTestFixture : DbTestFixture
 {
-    public class SqliteTestFixture : DbTestFixture
+    public override string ConnectionString => $"Data Source={TestDatabase}";
+
+    public SqliteTestFixture()
+        : base(SqliteFactory.Instance)
     {
-        public override string ConnectionString => $"Data Source={TestDatabase}";
+        InitTestDatabase();
+    }
 
-        public SqliteTestFixture()
-            : base(SqliteFactory.Instance)
-        {
-            InitTestDatabase();
-        }
-
-        protected override void CreateTestTables()
-        {
-            Connection.Execute(
-                @"create table people(
+    protected override void CreateTestTables()
+    {
+        Connection.Execute(
+            @"create table people(
                     id integer primary key autoincrement, 
                     name text not null, 
                     dob text not null,
                     height integer null,
                     address text null)");
-        }
+    }
 
-        protected override void DestroyTestDatabase()
+    protected override void DestroyTestDatabase()
+    {
+        try
+        { 
+            File.Delete(TestDatabase);
+        }
+        catch (IOException)
         {
-            try
-            { 
-                File.Delete(TestDatabase);
-            }
-            catch (IOException)
-            {
-                // Ignore IOException if the file is in use
-            }
+            // Ignore IOException if the file is in use
         }
     }
 }

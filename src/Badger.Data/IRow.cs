@@ -1,7 +1,6 @@
-namespace Badger.Data
+namespace Badger.Data;
+
+public interface IRow
 {
-    public interface IRow
-    {
-        T Get<T>(string column, T @default = default);
-    }
+    T Get<T>(string column, T @default = default);
 }

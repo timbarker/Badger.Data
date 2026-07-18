@@ -1,13 +1,12 @@
-namespace Badger.Data.Tests.Queries
+namespace Badger.Data.Tests.Queries;
+
+internal class CountPeopleQuery : IQuery<long>
 {
-    internal class CountPeopleQuery : IQuery<long>
+    public IPreparedQuery<long> Prepare(IQueryBuilder builder)
     {
-        public IPreparedQuery<long> Prepare(IQueryBuilder builder)
-        {
-            return builder
-                .WithSql("select count(*) from people")
-                .WithScalar<long>()
-                .Build();
-        }
+        return builder
+            .WithSql("select count(*) from people")
+            .WithScalar<long>()
+            .Build();
     }
 }

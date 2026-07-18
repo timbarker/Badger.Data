@@ -1,11 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Badger.Data
+namespace Badger.Data;
+
+public interface IPreparedCommand
 {
-    public interface IPreparedCommand
-    {
-        Task<int> ExecuteAsync(CancellationToken cancellationToken);
-        int Execute();
-    }
+    Task<int> ExecuteAsync(CancellationToken cancellationToken);
+    int Execute();
 }

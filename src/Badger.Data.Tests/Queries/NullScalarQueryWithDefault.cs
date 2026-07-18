@@ -1,13 +1,12 @@
-namespace Badger.Data.Tests.Queries
+namespace Badger.Data.Tests.Queries;
+
+internal class NullScalarQueryWithDefault : IQuery<long>
 {
-    internal class NullScalarQueryWithDefault : IQuery<long>
+    public IPreparedQuery<long> Prepare(IQueryBuilder builder)
     {
-        public IPreparedQuery<long> Prepare(IQueryBuilder builder)
-        {
-            return builder
-                .WithSql("select null")
-                .WithScalar(10L)
-                .Build();
-        }
+        return builder
+            .WithSql("select null")
+            .WithScalar(10L)
+            .Build();
     }
 }

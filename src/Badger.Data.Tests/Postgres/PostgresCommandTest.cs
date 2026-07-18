@@ -1,13 +1,8 @@
 using Xunit;
 
-namespace Badger.Data.Tests.Postgres
+namespace Badger.Data.Tests.Postgres;
+
+[Trait("Category", "Integration")]
+public class PostgresCommandTest(PostgresTestFixture fixture) : CommandTest<PostgresTestFixture>(fixture)
 {
-    [Trait("Category", "Integration")]
-    public class PostgresCommandTest : CommandTest<PostgresTestFixture>
-    {
-        public PostgresCommandTest(PostgresTestFixture fixture)
-            : base(fixture)
-        {
-        }
-    }
 }

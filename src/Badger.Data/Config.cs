@@ -4,17 +4,11 @@ using System.Data.Common;
 
 namespace Badger.Data
 {
-    sealed class ParameterHandler
+    sealed class ParameterHandler(Type type, Action<object, DbParameter> handle)
     {
-        public ParameterHandler(Type type, Action<object, DbParameter> handle)
-        {
-            Type = type;
-            Handle = handle;
-        }
+        public Type Type { get; } = type;
 
-        public Type Type { get; }
-
-        public Action<object, DbParameter> Handle { get; }
+        public Action<object, DbParameter> Handle { get; } = handle;
     }
 
     public class Config
@@ -47,7 +41,7 @@ namespace Badger.Data
 
         internal string ConnectionString { get; private set; } = string.Empty;
 
-        private readonly List<ParameterHandler> _parameterHandlers = new List<ParameterHandler>();
+        private readonly List<ParameterHandler> _parameterHandlers = [];
 
         internal IEnumerable<ParameterHandler> ParameterHandlers => _parameterHandlers;
     }

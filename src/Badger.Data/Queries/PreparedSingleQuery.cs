@@ -3,43 +3,29 @@ using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Badger.Data.Queries
+namespace Badger.Data.Queries;
+
+internal sealed class PreparedSingleQuery<TResult>(DbCommand command, Func<IRow, TResult> mapper, TResult @default) : IPreparedQuery<TResult>
 {
-    internal sealed class PreparedSingleQuery<TResult> : IPreparedQuery<TResult>
+    public TResult Execute()
     {
-        private readonly DbCommand _command;
-        private readonly Func<IRow, TResult> _mapper;
-        private readonly TResult _default;
+        using var reader = command.ExecuteReader();
+        var row = new Row(reader);
+        if (reader.Read())
+            return mapper.Invoke(row);
 
-        public PreparedSingleQuery(DbCommand command, Func<IRow, TResult> mapper, TResult @default)
+        return @default;
+    }
+
+    public async Task<TResult> ExecuteAsync(CancellationToken cancellationToken)
+    {
+        using (var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
         {
-            this._command = command;
-            this._mapper = mapper;
-            this._default = @default;
-        }
+            var row = new Row(reader);
+            if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                return mapper.Invoke(row);
 
-        public TResult Execute()
-        {
-            using (var reader = _command.ExecuteReader())
-            {
-                var row = new Row(reader);
-                if (reader.Read())
-                    return _mapper.Invoke(row);
-
-                return _default;
-            }
-        }
-
-        public async Task<TResult> ExecuteAsync(CancellationToken cancellationToken)
-        {
-            using (var reader = await _command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
-            {
-                var row = new Row(reader);
-                if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                    return _mapper.Invoke(row);
-
-                return _default;
-            }
+            return @default;
         }
     }
 }

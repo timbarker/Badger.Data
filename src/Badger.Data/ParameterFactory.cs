@@ -3,59 +3,51 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 
-namespace Badger.Data
+namespace Badger.Data;
+
+internal class ParameterFactory(DbProviderFactory dbProviderFactory, IEnumerable<ParameterHandler> parameterHandlers)
 {
-    internal class ParameterFactory
+    private readonly Dictionary<Type, Action<object, DbParameter>> _parameterHandlers = parameterHandlers.ToDictionary(h => h.Type, h => h.Handle);
+
+    public DbParameter Create<T>(string name, T value, int? size = null)
     {
-        private readonly DbProviderFactory _dbProviderFactory;
-        private readonly Dictionary<Type, Action<object, DbParameter>> _parameterHandlers;
+        if (string.IsNullOrEmpty(name))
+            throw new ArgumentException("Paramter name must not be null or empty", nameof(name));
 
-        public ParameterFactory(DbProviderFactory dbProviderFactory, IEnumerable<ParameterHandler> parameterHandlers)
-        {
-            _dbProviderFactory = dbProviderFactory;
-            _parameterHandlers = parameterHandlers.ToDictionary(h => h.Type, h => h.Handle);
-        }
+        var parameter = dbProviderFactory.CreateParameter();
+        parameter.ParameterName = name;
 
-        public DbParameter Create<T>(string name, T value, int? size = null)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException("Paramter name must not be null or empty", nameof(name));
+        if (_parameterHandlers.TryGetValue(typeof(T), out var handler))
+            handler.Invoke(value, parameter);
+        else
+            DefaultParameterHandler(value, parameter, size);
 
-            var parameter = _dbProviderFactory.CreateParameter();
-            parameter.ParameterName = name;
+        return parameter;
+    }
 
-            if (_parameterHandlers.TryGetValue(typeof(T), out var handler))
-                handler.Invoke(value, parameter);
-            else
-                DefaultParameterHandler(value, parameter, size);
+    public DbParameter Create<T>(string name, IEnumerable<T> value)
+    {
+        if (string.IsNullOrEmpty(name))
+            throw new ArgumentException("Paramter name must not be null or empty", nameof(name));
 
-            return parameter;
-        }
+        var parameter = dbProviderFactory.CreateParameter();
+        parameter.ParameterName = name;
 
-        public DbParameter Create<T>(string name, IEnumerable<T> value)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException("Paramter name must not be null or empty", nameof(name));
+        if (_parameterHandlers.TryGetValue(typeof(IEnumerable<T>), out var handler))
+            handler.Invoke(value, parameter);
+        else
+            DefaultParameterHandler(value, parameter);
 
-            var parameter = _dbProviderFactory.CreateParameter();
-            parameter.ParameterName = name;
+        return parameter;
+    }
 
-            if (_parameterHandlers.TryGetValue(typeof(IEnumerable<T>), out var handler))
-                handler.Invoke(value, parameter);
-            else
-                DefaultParameterHandler(value, parameter);
+    private static void DefaultParameterHandler(object value, DbParameter parameter, int? size = null)
+    {
+        parameter.Value = value ?? DBNull.Value;
 
-            return parameter;
-        }
-
-        private static void DefaultParameterHandler(object value, DbParameter parameter, int? size = null)
-        {
-            parameter.Value = value ?? DBNull.Value;
-
-            if (size.HasValue)
-                parameter.Size = size.Value;
-            else if (value is string s)
-                parameter.Size = s.Length;
-        }
+        if (size.HasValue)
+            parameter.Size = size.Value;
+        else if (value is string s)
+            parameter.Size = s.Length;
     }
 }

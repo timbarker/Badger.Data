@@ -1,10 +1,9 @@
 using System.Data;
 
-namespace Badger.Data
+namespace Badger.Data;
+
+public interface ISessionFactory
 {
-    public interface ISessionFactory
-    {
-        IQuerySession CreateQuerySession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
-        ICommandSession CreateCommandSession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
-    }
+    IQuerySession CreateQuerySession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
+    ICommandSession CreateCommandSession(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
 }

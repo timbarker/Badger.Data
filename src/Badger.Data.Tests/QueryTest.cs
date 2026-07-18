@@ -2,216 +2,176 @@ using Shouldly;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Badger.Data.Tests
+namespace Badger.Data.Tests;
+
+public abstract class QueryTest<T>(T fixture) : IClassFixture<T> where T : DbTestFixture
 {
-    public abstract class QueryTest<T> : IClassFixture<T> where T : DbTestFixture
+    protected readonly ISessionFactory SessionFactory = fixture.CreateSessionFactory();
+
+    [Fact]
+    public void ExecuteQueryTest()
     {
-        protected readonly T _fixture;
-        protected readonly ISessionFactory SessionFactory;
+        using var session = SessionFactory.CreateQuerySession();
+        var people = session.Execute(fixture.QueryFactory.CreateGetAllPeopleQuery());
 
-        protected QueryTest(T fixture)
-        {
-            this._fixture = fixture;
-            SessionFactory = fixture.CreateSessionFactory();
-        }
+        people.ShouldContain(p => p.Name == fixture.TestPerson1.Name);
+        people.ShouldContain(p => p.Name == fixture.TestPerson2.Name);
+    }
 
-        [Fact]
-        public void ExecuteQueryTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var people = session.Execute(_fixture.QueryFactory.CreateGetAllPeopleQuery());
+    [Fact]
+    public async Task ExecuteQueryAsyncTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var people = await session.ExecuteAsync(fixture.QueryFactory.CreateGetAllPeopleQuery(), TestContext.Current.CancellationToken);
 
-                people.ShouldContain(p => p.Name == _fixture.TestPerson1.Name);
-                people.ShouldContain(p => p.Name == _fixture.TestPerson2.Name);
-            }
-        }
+        people.ShouldContain(p => p.Name == fixture.TestPerson1.Name
+                               && p.Dob == fixture.TestPerson1.Dob
+                               && p.Height == fixture.TestPerson1.Height
+                               && p.Address == fixture.TestPerson1.Address);
+        people.ShouldContain(p => p.Name == fixture.TestPerson2.Name
+                               && p.Dob == fixture.TestPerson2.Dob
+                               && p.Height == fixture.TestPerson2.Height
+                               && p.Address == fixture.TestPerson2.Address);
+    }
 
-        [Fact]
-        public async Task ExecuteQueryAsyncTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var people = await session.ExecuteAsync(_fixture.QueryFactory.CreateGetAllPeopleQuery(), TestContext.Current.CancellationToken);
+    [Fact]
+    public void ExecuteScalarTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var peopleCount = session.Execute(fixture.QueryFactory.CreateCountPeopleQuery());
 
-                people.ShouldContain(p => p.Name == _fixture.TestPerson1.Name
-                                       && p.Dob == _fixture.TestPerson1.Dob
-                                       && p.Height == _fixture.TestPerson1.Height
-                                       && p.Address == _fixture.TestPerson1.Address);
-                people.ShouldContain(p => p.Name == _fixture.TestPerson2.Name
-                                       && p.Dob == _fixture.TestPerson2.Dob
-                                       && p.Height == _fixture.TestPerson2.Height
-                                       && p.Address == _fixture.TestPerson2.Address);
-            }
-        }
+        peopleCount.ShouldBe(2);
+    }
 
-        [Fact]
-        public void ExecuteScalarTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var peopleCount = session.Execute(_fixture.QueryFactory.CreateCountPeopleQuery());
+    [Fact]
+    public async Task ExecuteScalarAsyncTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var peopleCount = await session.ExecuteAsync(fixture.QueryFactory.CreateCountPeopleQuery(), TestContext.Current.CancellationToken);
 
-                peopleCount.ShouldBe(2);
-            }
-        }
+        peopleCount.ShouldBe(2);
+    }
 
-        [Fact]
-        public async Task ExecuteScalarAsyncTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var peopleCount = await session.ExecuteAsync(_fixture.QueryFactory.CreateCountPeopleQuery(), TestContext.Current.CancellationToken);
+    [Fact]
+    public void ExecuteScalarWhenNullWithDefaultTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var result = session.Execute(fixture.QueryFactory.CreateNullScalarWithDefaultQuery());
 
-                peopleCount.ShouldBe(2);
-            }
-        }
+        result.ShouldBe(10);
+    }
 
-        [Fact]
-        public void ExecuteScalarWhenNullWithDefaultTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var result = session.Execute(_fixture.QueryFactory.CreateNullScalarWithDefaultQuery());
+    [Fact]
+    public async Task ExecuteScalarWhenNullWithDefaultAsyncTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var result = await session.ExecuteAsync(fixture.QueryFactory.CreateNullScalarWithDefaultQuery(), TestContext.Current.CancellationToken);
 
-                result.ShouldBe(10);
-            }
-        }
+        result.ShouldBe(10);
+    }
 
-        [Fact]
-        public async Task ExecuteScalarWhenNullWithDefaultAsyncTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var result = await session.ExecuteAsync(_fixture.QueryFactory.CreateNullScalarWithDefaultQuery(), TestContext.Current.CancellationToken);
+    [Fact]
+    public void ExecuteQueryWhenNullTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var result = session.Execute(fixture.QueryFactory.CreateNullScalarQuery());
 
-                result.ShouldBe(10);
-            }
-        }
+        result.ShouldBeNull();
+    }
 
-        [Fact]
-        public void ExecuteQueryWhenNullTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var result = session.Execute(_fixture.QueryFactory.CreateNullScalarQuery());
+    [Fact]
+    public async Task ExecuteQueryWhenNullAsyncTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var result = await session.ExecuteAsync(fixture.QueryFactory.CreateNullScalarQuery(), TestContext.Current.CancellationToken);
 
-                result.ShouldBeNull();
-            }
-        }
+        result.ShouldBeNull();
+    }
 
-        [Fact]
-        public async Task ExecuteQueryWhenNullAsyncTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var result = await session.ExecuteAsync(_fixture.QueryFactory.CreateNullScalarQuery(), TestContext.Current.CancellationToken);
+    [Fact]
+    public void ExecuteSingleTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var person = session.Execute(
+            fixture.QueryFactory.CreateFindPersonByNameQuery(fixture.TestPerson1.Name));
 
-                result.ShouldBeNull();
-            }
-        }
+        person.Dob.ShouldBe(fixture.TestPerson1.Dob);
+    }
 
-        [Fact]
-        public void ExecuteSingleTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var person = session.Execute(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson1.Name));
+    [Fact]
+    public async Task ExecuteSingleAsyncTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var person = await session.ExecuteAsync(
+            fixture.QueryFactory.CreateFindPersonByNameQuery(fixture.TestPerson1.Name), TestContext.Current.CancellationToken);
 
-                person.Dob.ShouldBe(_fixture.TestPerson1.Dob);
-            }
-        }
-
-        [Fact]
-        public async Task ExecuteSingleAsyncTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var person = await session.ExecuteAsync(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson1.Name), TestContext.Current.CancellationToken);
-
-                person.Dob.ShouldBe(_fixture.TestPerson1.Dob);
-            }
-        }
+        person.Dob.ShouldBe(fixture.TestPerson1.Dob);
+    }
 
 
-        [Fact]
-        public void ExecuteSingleWithNullColumTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var person = session.Execute(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson1.Name));
+    [Fact]
+    public void ExecuteSingleWithNullColumTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var person = session.Execute(
+            fixture.QueryFactory.CreateFindPersonByNameQuery(fixture.TestPerson1.Name));
 
-                person.Address.ShouldBeNull();
-            }
-        }
+        person.Address.ShouldBeNull();
+    }
 
-        [Fact]
-        public async Task ExecuteSingleWithNullColumAsyncTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var person = await session.ExecuteAsync(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson1.Name), TestContext.Current.CancellationToken);
+    [Fact]
+    public async Task ExecuteSingleWithNullColumAsyncTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var person = await session.ExecuteAsync(
+            fixture.QueryFactory.CreateFindPersonByNameQuery(fixture.TestPerson1.Name), TestContext.Current.CancellationToken);
 
-                person.Address.ShouldBeNull();
-            }
-        }
+        person.Address.ShouldBeNull();
+    }
 
-        [Fact]
-        public void ExecuteSingleWithNullColumAndDefaultValueTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var person = session.Execute(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson2.Name));
+    [Fact]
+    public void ExecuteSingleWithNullColumAndDefaultValueTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var person = session.Execute(
+            fixture.QueryFactory.CreateFindPersonByNameQuery(fixture.TestPerson2.Name));
 
-                person.Height.ShouldBe(-1);
-            }
-        }
+        person.Height.ShouldBe(-1);
+    }
 
-        [Fact]
-        public async Task ExecuteSingleWithNullColumAndDefaultValueAsyncTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var person = await session.ExecuteAsync(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson2.Name), TestContext.Current.CancellationToken);
+    [Fact]
+    public async Task ExecuteSingleWithNullColumAndDefaultValueAsyncTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var person = await session.ExecuteAsync(
+            fixture.QueryFactory.CreateFindPersonByNameQuery(fixture.TestPerson2.Name), TestContext.Current.CancellationToken);
 
-                person.Height.ShouldBe(-1);
-            }
-        }
+        person.Height.ShouldBe(-1);
+    }
 
-        [Fact]
-        public void ExecuteSingleWhenNoRowsTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var person = session.Execute(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery("invalid name"));
+    [Fact]
+    public void ExecuteSingleWhenNoRowsTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var person = session.Execute(
+            fixture.QueryFactory.CreateFindPersonByNameQuery("invalid name"));
 
-                person.ShouldBeNull();
-            }
-        }
+        person.ShouldBeNull();
+    }
 
-        [Fact]
-        public async Task ExecuteSingleWhenNoRowsAsyncTest()
-        {
-            using (var session = SessionFactory.CreateQuerySession())
-            {
-                var person = await session.ExecuteAsync(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery("invalid name"), TestContext.Current.CancellationToken);
+    [Fact]
+    public async Task ExecuteSingleWhenNoRowsAsyncTest()
+    {
+        using var session = SessionFactory.CreateQuerySession();
+        var person = await session.ExecuteAsync(
+            fixture.QueryFactory.CreateFindPersonByNameQuery("invalid name"), TestContext.Current.CancellationToken);
 
-                person.ShouldBeNull();
-            }
-        }
+        person.ShouldBeNull();
+    }
 
-        [Fact]
-        public void QuerySessionWithNoExecutionsDoesNotThrow()
-        {
-            SessionFactory.CreateQuerySession().Dispose();
-        }
+    [Fact]
+    public void QuerySessionWithNoExecutionsDoesNotThrow()
+    {
+        SessionFactory.CreateQuerySession().Dispose();
     }
 }
