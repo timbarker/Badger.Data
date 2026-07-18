@@ -1,30 +1,30 @@
-using System;
-using System.Data.Common;
 using Badger.Data.Tests.Queries;
 using Dapper;
+using System;
+using System.Data.Common;
 
 namespace Badger.Data.Tests
 {
     public abstract class DbTestFixture : IDisposable
     {
-        public DbConnection Connection { get; private set;}
+        public DbConnection Connection { get; private set; }
         public DbProviderFactory ProviderFactory { get; }
         public abstract string ConnectionString { get; }
         protected string TestDatabase { get; }
         public QueryFactory QueryFactory { get; }
 
-        public readonly Person TestPerson1 = new Person 
-            { 
-                Name = "Bill", 
-                Dob = new DateTime(2000, 1, 1),
-                Height = 180
-            };
-        public readonly Person TestPerson2 = new Person 
-            { 
-                Name = "Ben", 
-                Dob = new DateTime(2001, 1, 1),
-                Address = "1 Badger Row"
-            };
+        public readonly Person TestPerson1 = new Person
+        {
+            Name = "Bill",
+            Dob = new DateTime(2000, 1, 1),
+            Height = 180
+        };
+        public readonly Person TestPerson2 = new Person
+        {
+            Name = "Ben",
+            Dob = new DateTime(2001, 1, 1),
+            Address = "1 Badger Row"
+        };
 
         protected DbTestFixture(DbProviderFactory providerFactory, QueryFactory queryFactory = null)
         {
@@ -43,7 +43,7 @@ namespace Badger.Data.Tests
             InsertTestData();
         }
 
-        protected virtual void CreateTestDatabase() {}
+        protected virtual void CreateTestDatabase() { }
 
         private void OpenTestConnection()
         {

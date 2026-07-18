@@ -1,15 +1,15 @@
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
 using Badger.Data.Tests.SqlServer.Queries;
 using Dapper;
-using Microsoft.SqlServer.Server;
+using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient.Server;
+using System.Data;
+using System.Linq;
 
 namespace Badger.Data.Tests.SqlServer
 {
     public class SqlServerTestFixture : DbTestFixture
     {
-        public SqlServerTestFixture() 
+        public SqlServerTestFixture()
             : base(SqlClientFactory.Instance, new SqlServerQueryFactory())
         {
             InitTestDatabase();

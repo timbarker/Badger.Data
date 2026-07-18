@@ -33,13 +33,13 @@ namespace Badger.Data
 
         public Config WithParameterHandler<T>(Action<T, DbParameter> handler)
         {
-            _parameterHandlers.Add(new ParameterHandler(typeof(T), (o, parameter) => handler.Invoke((T) o, parameter)));
+            _parameterHandlers.Add(new ParameterHandler(typeof(T), (o, parameter) => handler.Invoke((T)o, parameter)));
             return this;
         }
 
         public Config WithTableParameterHandler<T>(Action<IEnumerable<T>, DbParameter> handler)
         {
-            _parameterHandlers.Add(new ParameterHandler(typeof(IEnumerable<T>), (o, parameter) => handler.Invoke((IEnumerable<T>) o, parameter)));
+            _parameterHandlers.Add(new ParameterHandler(typeof(IEnumerable<T>), (o, parameter) => handler.Invoke((IEnumerable<T>)o, parameter)));
             return this;
         }
 

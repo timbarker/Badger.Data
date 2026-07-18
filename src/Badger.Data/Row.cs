@@ -8,8 +8,8 @@ namespace Badger.Data
     {
         private readonly DbDataReader _reader;
 
-        private static readonly IDictionary<Type, Func<DbDataReader, int, object>> Readers = 
-            new Dictionary<Type, Func<DbDataReader, int, object>> 
+        private static readonly IDictionary<Type, Func<DbDataReader, int, object>> Readers =
+            new Dictionary<Type, Func<DbDataReader, int, object>>
             {
                 [typeof(char)] = (r, i) => r.GetChar(i),
                 [typeof(bool)] = (r, i) => r.GetBoolean(i),
@@ -29,13 +29,13 @@ namespace Badger.Data
         {
             this._reader = reader;
         }
-        
+
         public T Get<T>(string column, T @default = default)
         {
             var ordinal = _reader.GetOrdinal(column);
             var type = typeof(T);
 
-            return !_reader.IsDBNull(ordinal) 
+            return !_reader.IsDBNull(ordinal)
                 ? (T)Readers[Nullable.GetUnderlyingType(type) ?? type].Invoke(_reader, ordinal)
                 : @default;
         }

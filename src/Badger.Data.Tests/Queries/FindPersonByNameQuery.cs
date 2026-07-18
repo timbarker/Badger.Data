@@ -16,7 +16,7 @@ namespace Badger.Data.Tests.Queries
             return builder
                 .WithSql("select name, dob, height, address from people where name = @name")
                 .WithParameter("name", _name)
-                .WithSingleMapper(row => new Person 
+                .WithSingleMapper(row => new Person
                 {
                     Name = row.Get<string>("name"),
                     Dob = row.Get<DateTime>("dob"),

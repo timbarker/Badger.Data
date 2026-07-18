@@ -32,7 +32,7 @@ namespace Badger.Data.Queries
         public async Task<IEnumerable<TResult>> ExecuteAsync(CancellationToken cancellationToken)
         {
             var result = new List<TResult>();
-            
+
             using (var reader = await _command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
             {
                 var row = new Row(reader);

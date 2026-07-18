@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using Shouldly;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Badger.Data.Tests
@@ -32,13 +32,13 @@ namespace Badger.Data.Tests
         {
             using (var session = SessionFactory.CreateQuerySession())
             {
-                var people = await session.ExecuteAsync(_fixture.QueryFactory.CreateGetAllPeopleQuery());
+                var people = await session.ExecuteAsync(_fixture.QueryFactory.CreateGetAllPeopleQuery(), TestContext.Current.CancellationToken);
 
-                people.ShouldContain(p => p.Name == _fixture.TestPerson1.Name 
+                people.ShouldContain(p => p.Name == _fixture.TestPerson1.Name
                                        && p.Dob == _fixture.TestPerson1.Dob
                                        && p.Height == _fixture.TestPerson1.Height
                                        && p.Address == _fixture.TestPerson1.Address);
-                people.ShouldContain(p => p.Name == _fixture.TestPerson2.Name 
+                people.ShouldContain(p => p.Name == _fixture.TestPerson2.Name
                                        && p.Dob == _fixture.TestPerson2.Dob
                                        && p.Height == _fixture.TestPerson2.Height
                                        && p.Address == _fixture.TestPerson2.Address);
@@ -61,7 +61,7 @@ namespace Badger.Data.Tests
         {
             using (var session = SessionFactory.CreateQuerySession())
             {
-                var peopleCount = await session.ExecuteAsync(_fixture.QueryFactory.CreateCountPeopleQuery());
+                var peopleCount = await session.ExecuteAsync(_fixture.QueryFactory.CreateCountPeopleQuery(), TestContext.Current.CancellationToken);
 
                 peopleCount.ShouldBe(2);
             }
@@ -83,7 +83,7 @@ namespace Badger.Data.Tests
         {
             using (var session = SessionFactory.CreateQuerySession())
             {
-                var result = await session.ExecuteAsync(_fixture.QueryFactory.CreateNullScalarWithDefaultQuery());
+                var result = await session.ExecuteAsync(_fixture.QueryFactory.CreateNullScalarWithDefaultQuery(), TestContext.Current.CancellationToken);
 
                 result.ShouldBe(10);
             }
@@ -105,7 +105,7 @@ namespace Badger.Data.Tests
         {
             using (var session = SessionFactory.CreateQuerySession())
             {
-                var result = await session.ExecuteAsync(_fixture.QueryFactory.CreateNullScalarQuery());
+                var result = await session.ExecuteAsync(_fixture.QueryFactory.CreateNullScalarQuery(), TestContext.Current.CancellationToken);
 
                 result.ShouldBeNull();
             }
@@ -129,13 +129,13 @@ namespace Badger.Data.Tests
             using (var session = SessionFactory.CreateQuerySession())
             {
                 var person = await session.ExecuteAsync(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson1.Name));
+                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson1.Name), TestContext.Current.CancellationToken);
 
                 person.Dob.ShouldBe(_fixture.TestPerson1.Dob);
             }
         }
 
-        
+
         [Fact]
         public void ExecuteSingleWithNullColumTest()
         {
@@ -154,7 +154,7 @@ namespace Badger.Data.Tests
             using (var session = SessionFactory.CreateQuerySession())
             {
                 var person = await session.ExecuteAsync(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson1.Name));
+                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson1.Name), TestContext.Current.CancellationToken);
 
                 person.Address.ShouldBeNull();
             }
@@ -178,7 +178,7 @@ namespace Badger.Data.Tests
             using (var session = SessionFactory.CreateQuerySession())
             {
                 var person = await session.ExecuteAsync(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson2.Name));
+                    _fixture.QueryFactory.CreateFindPersonByNameQuery(_fixture.TestPerson2.Name), TestContext.Current.CancellationToken);
 
                 person.Height.ShouldBe(-1);
             }
@@ -202,7 +202,7 @@ namespace Badger.Data.Tests
             using (var session = SessionFactory.CreateQuerySession())
             {
                 var person = await session.ExecuteAsync(
-                    _fixture.QueryFactory.CreateFindPersonByNameQuery("invalid name"));
+                    _fixture.QueryFactory.CreateFindPersonByNameQuery("invalid name"), TestContext.Current.CancellationToken);
 
                 person.ShouldBeNull();
             }

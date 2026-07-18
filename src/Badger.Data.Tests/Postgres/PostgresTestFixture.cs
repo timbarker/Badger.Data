@@ -8,8 +8,8 @@ namespace Badger.Data.Tests.Postgres
         private string _baseConnectionString = "Host=localhost;Username=postgres;Password=password;Pooling=false";
         public override string ConnectionString => $"{_baseConnectionString};Database={TestDatabase}";
 
-        public PostgresTestFixture() 
-            : base (NpgsqlFactory.Instance)
+        public PostgresTestFixture()
+            : base(NpgsqlFactory.Instance)
         {
             InitTestDatabase();
         }
@@ -32,7 +32,7 @@ namespace Badger.Data.Tests.Postgres
                 conn.Execute($"create database {TestDatabase}");
             }
         }
-        
+
         protected override void DestroyTestDatabase()
         {
             using (var conn = new NpgsqlConnection(_baseConnectionString))

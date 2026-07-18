@@ -1,7 +1,7 @@
+using Badger.Data.Sessions;
 using System;
 using System.Data;
 using System.Data.Common;
-using Badger.Data.Sessions;
 
 namespace Badger.Data
 {

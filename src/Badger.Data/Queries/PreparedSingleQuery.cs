@@ -25,7 +25,7 @@ namespace Badger.Data.Queries
                 var row = new Row(reader);
                 if (reader.Read())
                     return _mapper.Invoke(row);
-                
+
                 return _default;
             }
         }

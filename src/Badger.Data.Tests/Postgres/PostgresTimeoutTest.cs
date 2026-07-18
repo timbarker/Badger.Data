@@ -1,6 +1,6 @@
-using System;
 using Npgsql;
 using Shouldly;
+using System;
 using Xunit;
 
 namespace Badger.Data.Tests.Postgres

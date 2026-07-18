@@ -9,10 +9,10 @@ namespace Badger.Data.Tests.Queries
         {
             return builder
                 .WithSql("select id, name, dob, height, address from people")
-                .WithMapper(r => new Person 
-                { 
-                    Id = r.Get<long>("id"), 
-                    Name = r.Get<string>("name"), 
+                .WithMapper(r => new Person
+                {
+                    Id = r.Get<long>("id"),
+                    Name = r.Get<string>("name"),
                     Dob = r.Get<DateTime>("dob"),
                     Height = r.Get<int?>("height"),
                     Address = r.Get<string>("address")

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 
 namespace Badger.Data
 {
-    internal abstract class Builder<TBuilder> 
+    internal abstract class Builder<TBuilder>
       where TBuilder : class
     {
         protected readonly DbCommand Command;
@@ -23,7 +22,7 @@ namespace Badger.Data
             return this as TBuilder;
         }
 
-        public TBuilder WithParameter<T>(string name, T value) 
+        public TBuilder WithParameter<T>(string name, T value)
         {
             Command.Parameters.Add(_parameterFactory.Create(name, value));
             return this as TBuilder;
@@ -43,9 +42,9 @@ namespace Badger.Data
 
         public TBuilder WithSql(string sql)
         {
-            if (string.IsNullOrEmpty(sql)) 
+            if (string.IsNullOrEmpty(sql))
                 throw new ArgumentException("SQL must not be null or empty", nameof(sql));
-            
+
             Command.CommandText = sql;
             return this as TBuilder;
         }

@@ -5,9 +5,9 @@ namespace Badger.Data.Tests.Postgres
 {
     public class PostgresQueryTest : QueryTest<PostgresTestFixture>
     {
-        public PostgresQueryTest(PostgresTestFixture fixture) 
+        public PostgresQueryTest(PostgresTestFixture fixture)
             : base(fixture)
-        {            
+        {
         }
 
         class QueryWithArrayParameter : IQuery<long>
@@ -15,7 +15,7 @@ namespace Badger.Data.Tests.Postgres
             public IPreparedQuery<long> Prepare(IQueryBuilder queryBuilder)
             {
                 return queryBuilder.WithSql("select count(*) from people where name = any(@names)")
-                                   .WithParameter("names", new[] {"Bill"})
+                                   .WithParameter("names", new[] { "Bill" })
                                    .WithScalar<long>()
                                    .Build();
             }

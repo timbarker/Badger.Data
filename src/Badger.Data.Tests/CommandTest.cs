@@ -1,7 +1,7 @@
-using System;
-using System.Threading.Tasks;
 using Dapper;
 using Shouldly;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Badger.Data.Tests
@@ -27,7 +27,7 @@ namespace Badger.Data.Tests
                 this._name = name;
                 this._dob = dob;
             }
-            
+
             public IPreparedCommand Prepare(ICommandBuilder builder)
             {
                 return builder
@@ -51,7 +51,7 @@ namespace Badger.Data.Tests
                 session.Execute(new InsertPersonCommand(name, dob)).ShouldBe(1);
                 session.Commit();
             }
-        
+
             var result = _fixture.Connection.QuerySingle<Person>(
                 "select name, dob from people where name = @name", new { name });
 
@@ -66,10 +66,10 @@ namespace Badger.Data.Tests
 
             using (var session = _sessionFactory.CreateCommandSession())
             {
-                (await session.ExecuteAsync(new InsertPersonCommand(name, dob))).ShouldBe(1);
+                (await session.ExecuteAsync(new InsertPersonCommand(name, dob), TestContext.Current.CancellationToken)).ShouldBe(1);
                 session.Commit();
             }
-        
+
             var result = _fixture.Connection.QuerySingle<Person>(
                 "select name, dob from people where name = @name", new { name });
 
@@ -86,7 +86,7 @@ namespace Badger.Data.Tests
             {
                 session.Execute(new InsertPersonCommand(name, dob)).ShouldBe(1);
             }
-        
+
             var result = _fixture.Connection.QuerySingleOrDefault<Person>(
                 "select name, dob from people where name = @name", new { name });
 
@@ -101,9 +101,9 @@ namespace Badger.Data.Tests
 
             using (var session = _sessionFactory.CreateCommandSession())
             {
-                (await session.ExecuteAsync(new InsertPersonCommand(name, dob))).ShouldBe(1);
+                (await session.ExecuteAsync(new InsertPersonCommand(name, dob), TestContext.Current.CancellationToken)).ShouldBe(1);
             }
-        
+
             var result = _fixture.Connection.QuerySingleOrDefault<Person>(
                 "select name, dob from people where name = @name", new { name });
 
