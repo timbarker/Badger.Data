@@ -3,6 +3,7 @@ using Xunit;
 
 namespace Badger.Data.Tests.Postgres
 {
+    [Trait("Category", "Integration")]
     public class PostgresQueryTest : QueryTest<PostgresTestFixture>
     {
         public PostgresQueryTest(PostgresTestFixture fixture)

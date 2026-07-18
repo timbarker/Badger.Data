@@ -27,7 +27,14 @@ namespace Badger.Data.Tests.Sqlite
 
         protected override void DestroyTestDatabase()
         {
-            File.Delete(TestDatabase);
+            try
+            { 
+                File.Delete(TestDatabase);
+            }
+            catch (IOException)
+            {
+                // Ignore IOException if the file is in use
+            }
         }
     }
 }

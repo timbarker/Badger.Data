@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Badger.Data.Tests.SqlServer
 {
+    [Trait("Category", "Integration")]
     public class SqlServerQueryTest : QueryTest<SqlServerTestFixture>
     {
         public SqlServerQueryTest(SqlServerTestFixture fixture)

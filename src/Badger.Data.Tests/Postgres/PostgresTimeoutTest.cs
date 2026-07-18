@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Badger.Data.Tests.Postgres
 {
+    [Trait("Category", "Integration")]
     public class PostgresTimeoutTest : IClassFixture<PostgresTestFixture>
     {
         private readonly ISessionFactory _sessionFactory;
