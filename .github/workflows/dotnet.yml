@@ -7,6 +7,11 @@ on:
     branches: ["**"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
 jobs:
   build:
     name: Build and Test (matrix)
@@ -17,10 +22,10 @@ jobs:
         configuration: [Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '8.0.x'
 
@@ -31,4 +36,12 @@ jobs:
         run: dotnet build src/Badger.Data.sln --configuration ${{ matrix.configuration }} --no-restore
 
       - name: Test
-        run: dotnet test src/Badger.Data.sln --filter Category!=Integration --configuration ${{ matrix.configuration }} --no-build --verbosity normal
+        run: dotnet test src/Badger.Data.sln --filter Category!=Integration --configuration ${{ matrix.configuration }} --no-build --logger "trx;LogFileName=TestResults/test-results.trx"
+
+      - name: Test Report
+        if: always()
+        uses: dorny/test-reporter@v3
+        with:
+          name: dotnet tests
+          path: '**/TestResults/*.trx'
+          reporter: dotnet-trx
