@@ -1,17 +1,11 @@
 using System.Data.Common;
 
-namespace Badger.Data.Commands
+namespace Badger.Data.Commands;
+
+internal sealed class CommandBuilder(DbCommand command, ParameterFactory parameterFactory) : Builder<ICommandBuilder>(command, parameterFactory), ICommandBuilder
 {
-    internal sealed class CommandBuilder : Builder<ICommandBuilder>, ICommandBuilder
+    public IPreparedCommand Build()
     {
-        public CommandBuilder(DbCommand command, ParameterFactory parameterFactory)
-            : base (command, parameterFactory)
-        {
-        }
-  
-        public IPreparedCommand Build()
-        {
-            return new PreparedCommand(Command);
-        }
+        return new PreparedCommand(Command);
     }
 }

@@ -1,11 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Badger.Data
+namespace Badger.Data;
+
+public interface IPreparedQuery<T>
 {
-    public interface IPreparedQuery<T> 
-    {
-        Task<T> ExecuteAsync(CancellationToken cancellationToken);
-        T Execute();
-    }
+    Task<T> ExecuteAsync(CancellationToken cancellationToken);
+    T Execute();
 }

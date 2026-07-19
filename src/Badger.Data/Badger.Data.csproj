@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>7.1</LangVersion>
-    <PackageVersion>2.0.0</PackageVersion>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <LangVersion>12</LangVersion>
+    <PackageVersion>3.0.0</PackageVersion>
     <PackageId>Badger.Data</PackageId>
     <AssemblyName>Badger.Data</AssemblyName>
     <Description>Simple Database access</Description>

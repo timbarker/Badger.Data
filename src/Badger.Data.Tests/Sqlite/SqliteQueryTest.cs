@@ -1,10 +1,5 @@
-namespace Badger.Data.Tests.Sqlite
+namespace Badger.Data.Tests.Sqlite;
+
+public class SqliteQueryTest(SqliteTestFixture fixture) : QueryTest<SqliteTestFixture>(fixture)
 {
-    public class SqliteQueryTest : QueryTest<SqliteTestFixture>
-    {
-        public SqliteQueryTest(SqliteTestFixture fixture)
-            : base(fixture)
-        {
-        }
-    }
 }

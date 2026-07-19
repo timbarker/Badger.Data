@@ -1,8 +1,8 @@
+using Badger.Data.Commands;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using Badger.Data.Commands;
 
 namespace Badger.Data.Sessions
 {
@@ -26,7 +26,7 @@ namespace Badger.Data.Sessions
         {
             var builder = new CommandBuilder(await CreateCommandAsync(cancellationToken), _parameterFactory);
             return await command.Prepare(builder).ExecuteAsync(cancellationToken).ConfigureAwait(false);
-  
+
         }
     }
 }

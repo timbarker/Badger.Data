@@ -1,88 +1,68 @@
-using System;
 using Npgsql;
 using Shouldly;
+using System;
 using Xunit;
 
-namespace Badger.Data.Tests.Postgres
+namespace Badger.Data.Tests.Postgres;
+
+[Trait("Category", "Integration")]
+public class PostgresTimeoutTest(PostgresTestFixture fixture) : IClassFixture<PostgresTestFixture>
 {
-    public class PostgresTimeoutTest : IClassFixture<PostgresTestFixture>
+    private readonly ISessionFactory _sessionFactory = SessionFactory.With(config =>
+        {
+            config.WithConnectionString(fixture.ConnectionString)
+                .WithProviderFactory(fixture.ProviderFactory);
+        });
+
+    class TimeoutQuery(int sleep, int timeout) : IQuery<int>
     {
-        private readonly ISessionFactory _sessionFactory;
-
-        public PostgresTimeoutTest(PostgresTestFixture fixture)
+        public IPreparedQuery<int> Prepare(IQueryBuilder queryBuilder)
         {
-            _sessionFactory = SessionFactory.With(config =>
-            {
-                config.WithConnectionString(fixture.ConnectionString)
-                    .WithProviderFactory(fixture.ProviderFactory);
-            });
+            return queryBuilder
+                .WithSql("select pg_sleep(:sleep)")
+                .WithTimeout(TimeSpan.FromSeconds(timeout))
+                .WithParameter("sleep", sleep)
+                .WithScalar(42)
+                .Build();
         }
+    }
 
-        class TimeoutQuery : IQuery<int>
+    [Fact]
+    public void ThrowsWhenQueryExceedsTimeout()
+    {
+        Assert.Throws<NpgsqlException>(() =>
         {
-            readonly int _sleep;
-            readonly int _timeout;
+            using var session = _sessionFactory.CreateQuerySession();
+            session.Execute(new TimeoutQuery(5, 1));
+        });
+    }
 
-            public TimeoutQuery(int sleep, int timeout)
-            {
-                this._sleep = sleep;
-                this._timeout = timeout;
-            }
+    [Fact]
+    public void DoesNotThrowWhenQueryDoesntExceedTimeout()
+    {
+        using var session = _sessionFactory.CreateQuerySession();
+        var result = session.Execute(new TimeoutQuery(1, 5));
+        result.ShouldBe(42);
+    }
 
-            public IPreparedQuery<int> Prepare(IQueryBuilder queryBuilder)
-            {
-                return queryBuilder
-                    .WithSql("select pg_sleep(:sleep)")
-                    .WithTimeout(TimeSpan.FromSeconds(_timeout))
-                    .WithParameter("sleep", _sleep)
-                    .WithScalar(42)
-                    .Build();
-            }
-        }
-
-        [Fact]
-        public void ThrowsWhenQueryExceedsTimeout()
+    class TimeoutCommand : ICommand
+    {
+        public IPreparedCommand Prepare(ICommandBuilder commandBuilder)
         {
-            Assert.Throws<NpgsqlException>(() =>
-            {
-                using (var session = _sessionFactory.CreateQuerySession())
-                {
-                    session.Execute(new TimeoutQuery(5, 1));
-                }
-            });
+            return commandBuilder
+                .WithSql("select pg_sleep(5)")
+                .WithTimeout(TimeSpan.FromSeconds(1))
+                .Build();
         }
+    }
 
-        [Fact]
-        public void DoesNotThrowWhenQueryDoesntExceedTimeout()
+    [Fact]
+    public void ThrowsWhenCommandExceedsTimeout()
+    {
+        Assert.Throws<NpgsqlException>(() =>
         {
-            using (var session = _sessionFactory.CreateQuerySession())
-            {
-                var result = session.Execute(new TimeoutQuery(1, 5));
-                result.ShouldBe(42);
-            }
-        }
-
-        class TimeoutCommand : ICommand
-        {
-            public IPreparedCommand Prepare(ICommandBuilder commandBuilder)
-            {
-                return commandBuilder
-                    .WithSql("select pg_sleep(5)")
-                    .WithTimeout(TimeSpan.FromSeconds(1))
-                    .Build();
-            }
-        }
-
-        [Fact]
-        public void ThrowsWhenCommandExceedsTimeout()
-        {
-            Assert.Throws<NpgsqlException>(() =>
-            {
-                using (var session = _sessionFactory.CreateCommandSession())
-                {
-                    session.Execute(new TimeoutCommand());
-                }
-            });
-        }
+            using var session = _sessionFactory.CreateCommandSession();
+            session.Execute(new TimeoutCommand());
+        });
     }
 }

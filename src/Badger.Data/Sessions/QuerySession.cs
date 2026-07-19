@@ -1,8 +1,8 @@
+using Badger.Data.Queries;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using Badger.Data.Queries;
 
 namespace Badger.Data.Sessions
 {
