@@ -10,7 +10,4 @@
     <PackageProjectUrl>https://github.com/timbarker/Badger.Data</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/timbarker/Badger.Data/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
-  </ItemGroup>
 </Project>

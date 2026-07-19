@@ -21,8 +21,8 @@ public class SqlServerQueryTest(SqlServerTestFixture fixture) : QueryTest<SqlSer
     public void QueryWithCustomParameterTypeTest()
     {
         using var session = SessionFactory.CreateQuerySession();
-        var result = session.Execute(new QueryPersonByName(fixture.TestPerson1));
+        var result = session.Execute(new QueryPersonByName(Fixture.TestPerson1));
 
-        result.Dob.ShouldBe(fixture.TestPerson1.Dob);
+        result.Dob.ShouldBe(Fixture.TestPerson1.Dob);
     }
 }
