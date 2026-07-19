@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <LangVersion>12</LangVersion>
     <PackageVersion>3.0.0</PackageVersion>
     <PackageId>Badger.Data</PackageId>
